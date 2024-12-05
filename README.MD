@@ -1,6 +1,6 @@
 内部辅助（dll）
 
-·偏移来自a2x dump
+·偏移来自a2x dump和IDA反汇编
 
 ·原作者为https://github.com/MitilcC/CS2-Internal-Cheat
 
