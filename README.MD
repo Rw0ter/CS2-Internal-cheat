@@ -4,9 +4,38 @@
 
 ·原作者为https://github.com/MitilcC/CS2-Internal-Cheat
 
-·这个项目是半成品不能直接编译有报错因为我边写边上传的
+·这个项目现在是可以直接编译使用的！
 
-·添加了自瞄平滑（测试），自瞄范围显示，自瞄范围更改，FOV change
+·特性：
+自瞄平滑
+可视检查
+静默自瞄
+完美静默自瞄
+RCS后坐力控制系统
+自动开火
+自动扳机
+FOV更改
 
-·正在学习asphxia的掩体判断并应用ing
+·搬运请注明出处！
 
+-EN
+
+Internal Cheat (DLL)
+
+The offset comes from the a2x dump and IDA
+
+The original author is https://github.com/MitilcC/CS2-Internal-Cheat
+
+This project is now ready to compile and use!
+
+Features: 
+Aimbot Smooth
+Visible Check
+Silent aim
+Perfect Silent aim,
+RCS (Recoil Control System)
+Auto-Fire
+Trigger bot
+FOV Change
+
+Please indicate the source for handling!
