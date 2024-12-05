@@ -18,9 +18,9 @@
 
 
 
-【特别感谢SYR1337】
-【特别感谢SYR1337】
-【特别感谢SYR1337】
+ 【特别感谢SYR1337】
+ 【特别感谢SYR1337】
+ 【特别感谢SYR1337】
 
 
 ·搬运请注明出处！
@@ -44,5 +44,11 @@ Features:
 ^*Auto-Fire*^
 ^*Trigger bot*^
 ^*FOV Change*^
+
+
+【Thanks SYR1337】 
+【Thanks SYR1337】 
+【Thanks SYR1337】
+
 
 Please indicate the source for handling!
