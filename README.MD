@@ -7,14 +7,14 @@
 ·这个项目现在是可以直接编译使用的！
 
 ·特性：
-自瞄平滑
-可视检查
-静默自瞄
-完美静默自瞄
-RCS后坐力控制系统
-自动开火
-自动扳机
-FOV更改
+^*自瞄平滑*^
+^*可视检查*^
+^*静默自瞄*^
+^*完美静默自瞄*^
+^*RCS后坐力控制系统*^
+^*自动开火*^
+^*自动扳机*^
+^*FOV更改*^
 
 ·搬运请注明出处！
 
@@ -29,13 +29,13 @@ The original author is https://github.com/MitilcC/CS2-Internal-Cheat
 This project is now ready to compile and use!
 
 Features: 
-Aimbot Smooth
-Visible Check
-Silent aim
-Perfect Silent aim,
-RCS (Recoil Control System)
-Auto-Fire
-Trigger bot
-FOV Change
+^*Aimbot Smooth*^
+^*Visible Check*^
+^*Silent aim*^
+^*Perfect Silent aim*^
+^*RCS (Recoil Control System)*^
+^*Auto-Fire*^
+^*Trigger bot*^
+^*FOV Change*^
 
 Please indicate the source for handling!
