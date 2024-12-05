@@ -1,15 +1,66 @@
 #include "mem Aimbot.h"
 #include "imgui/imgui.h"
+#include "GameTace.hpp"
+#include "menu.h"
+#include "Search.h"
+#include "mem.hpp"
+#include "CUserCmd.h"
+#include "weaponcheak.hpp"
 
-
+#include "CCSGOInput.hpp"
 
 Vector3 LastAngles{};
 bool ShotFired = false;
 Vector3 WantAngele{};
 
+
+mem::Process cs2(TEXT("cs2.exe"));
+auto client = cs2.get_module_handle(TEXT("client.dll"));
+
+std::optional<Vector3> GetLocalEye()  noexcept {
+	if (!client)
+		return std::nullopt;
+
+	Player LocalPlayer{};
+
+	LocalPlayer.control = Address::GetLocalPlayerControl();
+
+	LocalPlayer.pawn = Get::PlayerPawnAddress(LocalPlayer.control);
+
+
+	auto* Origin = reinterpret_cast<Vector3*>(LocalPlayer.pawn + cs2_dumper::schemas::client_dll::C_BasePlayerPawn::m_vOldOrigin);
+	auto* ViewOffset = reinterpret_cast<Vector3*>(LocalPlayer.pawn + cs2_dumper::schemas::client_dll::C_BaseModelEntity::m_vecViewOffset);
+
+	Vector3 LocalEye = *Origin + *ViewOffset;
+	printf(" LocalEye Vec3   x: %f y : %f z : %f\n", LocalEye.x, LocalEye.y, LocalEye.z);
+	if (!std::isfinite(LocalEye.x) || !std::isfinite(LocalEye.y) || !std::isfinite(LocalEye.z))
+		return std::nullopt;
+
+	if (LocalEye.Length() < 0.1f)
+		return std::nullopt;
+
+	return LocalEye;
+}
+
+std::optional<Vector3> GetEntityEye(const Player& Entity) noexcept {
+	if (!Entity.pawn)
+		return std::nullopt;
+
+	auto* Origin = reinterpret_cast<Vector3*>(Entity.pawn + cs2_dumper::schemas::client_dll::C_BasePlayerPawn::m_vOldOrigin);
+	auto* ViewOffset = reinterpret_cast<Vector3*>(Entity.pawn + cs2_dumper::schemas::client_dll::C_BaseModelEntity::m_vecViewOffset);
+
+	Vector3 Result = *Origin + *ViewOffset;
+	if (!std::isfinite(Result.x) || !std::isfinite(Result.y) || !std::isfinite(Result.z))
+		return std::nullopt;
+
+	return Result;
+}
+
+
 bool Aimbot::GetBestTarget()
 {
 	Player LocalPlayer{};
+	
 
 	LocalPlayer.control = Address::GetLocalPlayerControl();
 
@@ -31,6 +82,9 @@ bool Aimbot::GetBestTarget()
 	int Distance = 0;
 	int LastDistance = 999999999;
 
+
+
+	bool bHasScanTarget = false;
 	for (int i{ 0 }; i < 64; ++i)
 	{
 
@@ -82,24 +136,25 @@ bool Aimbot::GetBestTarget()
 		{
 			continue;
 		}
-
-		// initialize trace, construct filterr and initialize ray
-		GameTrace_t trace = GameTrace_t();
-		TraceFilter_t filter = TraceFilter_t(0x1C3003, pLocalPawn, nullptr, 4);
-		Ray_t ray = Ray_t();
-
-		// cast a ray from local player eye positon -> player head bone
-		// @note: would recommend checking for nullptrs
-		I::GameTraceManager->TraceShape(&ray, pLocalPawn->GetEyePosition(), pPawn->GetGameSceneNode()->GetSkeletonInstance()->pBoneCache->GetOrigin(6), &filter, &trace);
-		// check if the hit entity is the one we wanted to check and if the trace end point is visible
-		if (trace.m_pHitEntity != pPawn || !trace.IsVisible())
-			continue;
+		auto LocalEye = GetLocalEye();
+		auto EntityEye = GetEntityEye(Entity);
 
 
+
+		if (Menu::Aimbot::bVisibleCheck) {
+			void* pawnPtr = reinterpret_cast<void*>(LocalPlayer.pawn);
+			CGameTrace pTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), EntityEye.value(), pawnPtr);
+			if (!pTrace.IsVisible()) {
+				continue;
+			}
+		}
 
 		Vector3 AimPos = Get::BonePos(Entity.pawn, Menu::Aimbot::AimPos);
-
+		printf("aimpos Vec3  x: %f y : %f z : %f\n", AimPos.x, AimPos.y, AimPos.z);
 		Vector3 EndPos{};
+
+
+
 
 		Vector3 Window = Get::WindowSize();
 
@@ -113,13 +168,14 @@ bool Aimbot::GetBestTarget()
 			Distance = Math::distance(left,right);
 			if(Distance < LastDistance)
 			{
+				bHasScanTarget = true;
 				LastDistance = Distance;
 				Target::addr= Entity.pawn;
 			}
 		}
 	}
 
-	return true;
+	return bHasScanTarget;
 }
 
 
@@ -176,52 +232,55 @@ void Aimbot::ReleaseMouseButton()
 
 bool Aimbot::ShotTarget()
 {
-	static Vector3 vecSmooth; 
-	Vector3 targetAngle{};
-	Vector3 LastAngles = {};
 	Player LocalPlayer{};
-	float steps = Menu::Aimbot::Smooth * 0.003f; 
+	float steps = Menu::Aimbot::Smooth * 0.01f; 
 
-
+	// setting
+	bool bSilent = Menu::Aimbot::bSilent;
+	bool bAutoRecoil = Menu::Aimbot::bAutoRecoil;
+	bool bPrefectSilent = Menu::Aimbot::bPrefectSilent;
+	float flRecoilAmount = Menu::Aimbot::flRecoilAmount; // 100%
 
 	LocalPlayer.control = Address::GetLocalPlayerControl();
 
 
 	LocalPlayer.pawn = Get::PlayerPawnAddress(LocalPlayer.control);
+	CUtlVector<Vector3>& vecAimPunchs = Get::GetAimPunch(LocalPlayer.pawn);
 
-	LastAngles = LocalPlayer::GetViewAngles(); // 获取当前视角角度
-	targetAngle = Aimbot::GetTargetAngle(Get::BonePos(Target::addr, Menu::Aimbot::AimPos)); // 获取目标角度
-
-	Vector3 delta = targetAngle - vecSmooth;
-
-
-	// 设置最大角度变化
-	float maxAngleChange = 60.0f; // 可以根据需要动态调整
-
-	// 限制角度变化
-	if (delta.Length() > maxAngleChange) {
-		delta = delta.Normalized() * maxAngleChange; 
+	Vector3 vecCameraAngles = CCSGOInput::Get()->GetViewAngles();
+	Vector3 targetAngle = Aimbot::GetTargetAngle(Get::BonePos(Target::addr, Menu::Aimbot::AimPos)); 
+	if (vecAimPunchs.Count() > 0 && vecAimPunchs.Count() < 0xFFFF) {
+		Vector3 vecAimPunch = vecAimPunchs.Element(vecAimPunchs.Count() - 1);
+		targetAngle -= ((vecAimPunch * 2.f) * flRecoilAmount);
 	}
 
-	// 更新 vecSmooth
-	vecSmooth = vecSmooth + delta;
+	if (bSilent) {
+		CUserCMD* pUserCmd = CUserCMD::Get();
+		if (pUserCmd) {
+			pUserCmd->SetHistoryAngles(targetAngle);
+			CBaseUserCmd* pBaseCmd = pUserCmd->csgoUserCmd.pBaseCmd;
+			if (pBaseCmd && pBaseCmd->pViewAngles && !bPrefectSilent) {
+				pBaseCmd->pViewAngles->m_view_angles = targetAngle;
+			}
 
-
-		if (steps <= 0)
-		{
-			LocalPlayer::SetViewAngles(targetAngle);
-
+			if (pUserCmd->nButtons.nValue & IN_ATTACK) {
+				pUserCmd->InvalidatetAttackIndex();
+			}
 		}
-		else
-		{
-			vecSmooth = vecSmooth.Lerp(targetAngle, steps);
-			LocalPlayer::SetViewAngles(vecSmooth);
+
+	} else {
+		Vector3 delta = targetAngle - vecCameraAngles;
+		Vector3 vecSmoothAngles = delta * (1.000001f - steps);
+		Vector3 vecTargetAngles = vecCameraAngles + vecSmoothAngles;
+		if (steps <= 0.f) {
+			vecTargetAngles = targetAngle;
 		}
-		ShotFired = true;
-	
+
+		CCSGOInput::Get()->SetViewAngles(vecTargetAngles);
+	}
 
 
-
+	ShotFired = true;
 }
 
 bool Aimbot::Start()
@@ -229,36 +288,20 @@ bool Aimbot::Start()
 	bool CanAim = GetBestTarget();
 
 	if (ShotFired)
-	{
-
-		ShotFired = false;
-	}
+        ShotFired = !ShotFired;
 
 
-
-	if (GetAsyncKeyState(Menu::Aimbot::AimKey) && CanAim)
-	{
-		if (Get::PlayerAlive(Target::addr))
-		{
+	if (GetAsyncKeyState(Menu::Aimbot::AimKey)|| Menu::Aimbot::AimbotAlwaysOn && CanAim && !Menu::ShowMenu) {
+		if (Get::PlayerAlive(Target::addr)) {
 			ShotTarget();
+		} else {
+			Target::addr = 0;
 		}
-		else
-			Target::addr = {};
-	}
-	else
-	{
+
+	} else {
 		Target::addr = 0;
 	}
-
-	if (!GetAsyncKeyState(Menu::Aimbot::AimKey)) {
-		// 允许鼠标控制的视角不被修改
-		LastAngles = LocalPlayer::GetViewAngles(); // 获取当前视角
-		LocalPlayer::SetViewAngles(LastAngles);
-	}
-
-
-
-
+	
 
 
 }
@@ -270,13 +313,198 @@ void Aimbot::DrawAimbotFOV()
 
 	int aimSize = Menu::Aimbot::AimSize;
 
-	ImVec2 rectMin = ImVec2(screenCenter.x - aimSize, screenCenter.y - aimSize);
-	ImVec2 rectMax = ImVec2(screenCenter.x + aimSize, screenCenter.y + aimSize);
-
-	float thickness = 2.0f; // 矩形边框厚度
+	float thickness = 2.0f; 
 
 	ImDrawList* drawList = ImGui::GetForegroundDrawList();
-	drawList->AddRect(rectMin, rectMax, Menu::Aimbot::rectColor, 0.0f, ImDrawFlags_None, thickness);
-
+	drawList->AddCircle(screenCenter, aimSize, Menu::Aimbot::rectColor, 1024, thickness);
 }
 
+void Aimbot::Tiggerbot()
+{
+	Player LocalPlayer{};
+	LocalPlayer.control = Address::GetLocalPlayerControl();
+
+	if (!LocalPlayer.control)
+		return;
+
+	LocalPlayer.pawn = Get::PlayerPawnAddress(LocalPlayer.control);
+
+	if (!LocalPlayer.pawn)
+		return;
+
+	LocalPlayer.team = Get::PlayerTeam(LocalPlayer.pawn);
+
+	if (!Get::PlayerAlive(LocalPlayer.pawn))
+		return;
+
+	int LastDistance = 999999999;
+
+	for (int i{ 0 }; i < 64; ++i)
+	{
+		Player Entity{};
+		Entity.control = Address::GetEntityBase(i);
+
+		if (!Entity.control || !Get::PawnAlive(Entity.control))
+			continue;
+
+		Entity.pawn = Get::PlayerPawnAddress(Entity.control);
+
+		if (!Entity.pawn || Entity.pawn == LocalPlayer.pawn)
+			continue;
+
+		Entity.team = Get::PlayerTeam(Entity.pawn);
+		Entity.health = Get::PlayerHealth(Entity.pawn);
+
+		if (Get::IsDormant(Entity.pawn))
+			continue;
+
+		if (Entity.team == LocalPlayer.team && !Menu::Aimbot::Team)
+			continue;
+
+		if (Entity.team != 2 && Entity.team != 3 && !Menu::Aimbot::Team)
+			continue;
+
+		auto LocalEye = GetLocalEye();
+		auto EntityEye = GetEntityEye(Entity);
+
+		if (!LocalEye || !EntityEye)
+			continue;
+
+		void* pawnPtr = reinterpret_cast<void*>(LocalPlayer.pawn);
+		CGameTrace pTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), EntityEye.value(), pawnPtr);
+		if (!pTrace.IsVisible())
+			continue;
+
+		Vector3 AimPos = Get::BonePos(Entity.pawn, Menu::Aimbot::AimPos);
+		Vector3 EndPos{};
+		Vector3 Window = Get::WindowSize();
+
+		if (!Utils::WorldToScreen(AimPos, EndPos, Address::GetViewMatrixPtr(), Window.x, Window.y))
+			continue;
+
+		ImVec2 windowSize = ImGui::GetIO().DisplaySize;
+		ImVec2 screenCenter = ImVec2(windowSize.x / 2, windowSize.y / 2);
+		int TiggerSize = 5;
+
+		if (EndPos.x > screenCenter.x - TiggerSize && EndPos.x < screenCenter.x + TiggerSize &&
+			EndPos.y > screenCenter.y - TiggerSize && EndPos.y < screenCenter.y + TiggerSize)
+		{
+			int Distance = Math::distance(screenCenter.x - EndPos.x, screenCenter.y - EndPos.y);
+
+			if (Distance < LastDistance && GetAsyncKeyState(Menu::Tiggerbot::HotKey) && !Menu::ShowMenu && weaponcheck() == true)
+			{
+				LastDistance = Distance;
+				static auto lastShotTime = std::chrono::high_resolution_clock::now();
+				auto currentTime = std::chrono::high_resolution_clock::now();
+				auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastShotTime).count();
+				if (elapsedTime >= Menu::Tiggerbot::TriggerTargetDelay) {
+					mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+					mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+					lastShotTime = std::chrono::high_resolution_clock::now();
+					break; 
+				}
+			}
+		}
+	}
+}
+
+void Aimbot::DrawTiggerbotFOV()
+{
+	ImVec2 windowSize = ImGui::GetIO().DisplaySize;
+	ImVec2 screenCenter = ImVec2(windowSize.x / 2, windowSize.y / 2);
+
+	int aimSize = 3;
+
+	float thickness = 2.0f;
+
+	ImDrawList* drawList = ImGui::GetForegroundDrawList();
+	drawList->AddCircle(screenCenter, aimSize, Menu::Tiggerbot::rectColor, 1024, thickness);
+}
+
+void Aimbot::AutoFire()
+{
+	Player LocalPlayer{};
+	LocalPlayer.control = Address::GetLocalPlayerControl();
+
+	if (!LocalPlayer.control)
+		return;
+
+	LocalPlayer.pawn = Get::PlayerPawnAddress(LocalPlayer.control);
+
+	if (!LocalPlayer.pawn)
+		return;
+
+	LocalPlayer.team = Get::PlayerTeam(LocalPlayer.pawn);
+
+	if (!Get::PlayerAlive(LocalPlayer.pawn))
+		return;
+
+	int LastDistance = 999999999;
+
+	for (int i{ 0 }; i < 64; ++i)
+	{
+		Player Entity{};
+		Entity.control = Address::GetEntityBase(i);
+
+		if (!Entity.control || !Get::PawnAlive(Entity.control))
+			continue;
+
+		Entity.pawn = Get::PlayerPawnAddress(Entity.control);
+
+		if (!Entity.pawn || Entity.pawn == LocalPlayer.pawn)
+			continue;
+
+		Entity.team = Get::PlayerTeam(Entity.pawn);
+		Entity.health = Get::PlayerHealth(Entity.pawn);
+
+		if (Get::IsDormant(Entity.pawn))
+			continue;
+
+		if (Entity.team == LocalPlayer.team && !Menu::Aimbot::Team)
+			continue;
+
+		if (Entity.team != 2 && Entity.team != 3 && !Menu::Aimbot::Team)
+			continue;
+
+		auto LocalEye = GetLocalEye();
+		auto EntityEye = GetEntityEye(Entity);
+
+		if (!LocalEye || !EntityEye)
+			continue;
+
+		void* pawnPtr = reinterpret_cast<void*>(LocalPlayer.pawn);
+		CGameTrace pTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), EntityEye.value(), pawnPtr);
+		if (!pTrace.IsVisible())
+			continue;
+
+		Vector3 AimPos = Get::BonePos(Entity.pawn, Menu::Aimbot::AimPos);
+		Vector3 EndPos{};
+		Vector3 Window = Get::WindowSize();
+
+		if (!Utils::WorldToScreen(AimPos, EndPos, Address::GetViewMatrixPtr(), Window.x, Window.y))
+			continue;
+
+		ImVec2 windowSize = ImGui::GetIO().DisplaySize;
+		ImVec2 screenCenter = ImVec2(windowSize.x / 2, windowSize.y / 2);
+		int FireSize = Menu::Aimbot::AimSize;
+
+		if (EndPos.x > screenCenter.x - FireSize && EndPos.x < screenCenter.x + FireSize &&
+			EndPos.y > screenCenter.y - FireSize && EndPos.y < screenCenter.y + FireSize)
+		{
+
+			if (Menu::Tiggerbot::AutoFire && Menu::Aimbot::bSilent && !Menu::ShowMenu && weaponcheck() == TRUE)
+			{
+				static auto lastShotTime = std::chrono::high_resolution_clock::now();
+				auto currentTime = std::chrono::high_resolution_clock::now();
+				auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastShotTime).count();
+				if (elapsedTime >= Menu::Tiggerbot::TriggerTargetDelay) {
+					mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+					mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+					lastShotTime = std::chrono::high_resolution_clock::now();
+					break;
+				}
+			}
+		}
+
+	}
+}

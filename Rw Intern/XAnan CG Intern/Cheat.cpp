@@ -9,6 +9,7 @@ bool Cheat::Run()
 	if (Menu::ShowMenu)
 		Menu::start();
 	
+
 	static std::chrono::time_point LastTimePoint = std::chrono::steady_clock::now();
 	auto CurTimePoint = std::chrono::steady_clock::now();
 
@@ -17,15 +18,10 @@ bool Cheat::Run()
 		Menu::ShowMenu = !Menu::ShowMenu;
 		LastTimePoint = CurTimePoint;
 	}
-
-
 	if (GameState::IsMatchStarted())
 	{
-
-
-
-		if (Menu::bAimBot && weaponcheck() == true) Aimbot::Start();
-
+		Aimbot::Tiggerbot();
+		Aimbot::AutoFire();
 		if (Menu::bESP) ESP::Start();
 	}
 

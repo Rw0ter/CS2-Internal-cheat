@@ -9,6 +9,8 @@
 #include <string>
 #include <bitset>
 #include <map>
+#include "UtlVector.h"
+
 
 class Player
 {
@@ -60,6 +62,7 @@ namespace Get
 	Vector3 WindowSize();
 	Vector3 LastCameraPos(intptr_t addr);
 	std::string GetWeaponName(intptr_t addr);
+	CUtlVector<Vector3>& GetAimPunch(intptr_t addr);
 }
 
 namespace Set

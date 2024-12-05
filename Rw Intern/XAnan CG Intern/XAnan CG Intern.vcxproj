@@ -138,7 +138,7 @@
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <AdditionalIncludeDirectories>C:\Users\admin\Desktop\CS2 update\Rw Intern\XAnan CG Intern\CS2_Dumper;C:\Users\admin\Desktop\CS2 update\Rw Intern\XAnan CG Intern\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>imgui;kiero;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -149,7 +149,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="cgametracemanager.h" />
+    <ClInclude Include="CCSGOInput.hpp" />
+    <ClInclude Include="CUserCmd.h" />
+    <ClInclude Include="GameTace.hpp" />
     <ClInclude Include="mem Aimbot.h" />
     <ClInclude Include="Bone.h" />
     <ClInclude Include="Cheat.h" />
@@ -184,20 +186,20 @@
     <ClInclude Include="LocalPlayer.h" />
     <ClInclude Include="Math.h" />
     <ClInclude Include="mem.hpp" />
-    <ClInclude Include="memory.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="offsets.h" />
     <ClInclude Include="Address.h" />
     <ClInclude Include="Peb.h" />
     <ClInclude Include="Search.h" />
-    <ClInclude Include="SlientAim.h" />
-    <ClInclude Include="Tiggerbot.h" />
+    <ClInclude Include="Tace Memory.hpp" />
     <ClInclude Include="Ults.h" />
+    <ClInclude Include="UtlMemory.h" />
+    <ClInclude Include="UtlVector.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="weaponcheak.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="cgametracemanager.cpp" />
+    <ClCompile Include="GameTace.cpp" />
     <ClCompile Include="mem Aimbot.cpp" />
     <ClCompile Include="Bone.cpp" />
     <ClCompile Include="Cheat.cpp" />
@@ -220,11 +222,8 @@
     <ClCompile Include="kiero\minhook\src\trampoline.c" />
     <ClCompile Include="Address.cpp" />
     <ClCompile Include="LocalPlayer.cpp" />
-    <ClCompile Include="memory.cpp" />
     <ClCompile Include="Menu.cpp" />
     <ClCompile Include="Search.cpp" />
-    <ClCompile Include="SlientAim.cpp" />
-    <ClCompile Include="Triggerbot.cpp" />
     <ClCompile Include="Ults.cpp" />
     <ClCompile Include="Vector.cpp" />
     <ClCompile Include="weaponcheck.cpp" />

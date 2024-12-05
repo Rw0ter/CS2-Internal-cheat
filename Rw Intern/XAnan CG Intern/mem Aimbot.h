@@ -21,6 +21,9 @@ namespace Aimbot
 	bool ShotTarget();
 	void ReleaseMouseButton();
 	void DrawAimbotFOV();
+	void Tiggerbot();
+	void DrawTiggerbotFOV();
+	void AutoFire();
 };
 
 namespace Target

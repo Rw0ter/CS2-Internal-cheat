@@ -98,17 +98,38 @@ void Menu::start()
 				ImGui::BeginChildPos("AimBot", ImVec2(300 * dpi_scale, 580 * dpi_scale));
 				{
 					ImGui::SetWindowFontScale(dpi_scale);
-					ImGui::Checkbox("AimBot", &Menu::bAimBot);
-
-					ImGui::Checkbox("FOV", &Menu::Aimbot::showFOV);
-
+					ImGui::Checkbox("mem AimBot", &Menu::bAimBot);
+					ImGui::Checkbox("Slient AimBot", &Menu::Aimbot::bSilent);
+					ImGui::Checkbox("PSlient AimBot", &Menu::Aimbot::bPrefectSilent);
+					ImGui::Checkbox("Always on", &Menu::Aimbot::AimbotAlwaysOn);
+					ImGui::Checkbox("Visible Check", &Menu::Aimbot::bVisibleCheck);
+					ImGui::Checkbox("AutoRecoil", &Menu::Aimbot::bAutoRecoil);
 					ImGui::Keybind("Aim Bind", &Menu::Aimbot::AimKey, true);
-
+					ImGui::Checkbox("FOV", &Menu::Aimbot::showFOV);
+					ImGui::ColorEdit4("Aimbot Fov Circle##Aimbot FovCircleColor", reinterpret_cast<float*>(&Menu::Aimbot::rectColor), ImGuiColorEditFlags_NoInputs);
+					ImGui::Checkbox("Team Damage", &Menu::Aimbot::Team);
 					int FovMin = 1, FovMax = 800;
+					float RecoilSmoothMin = 0.000f, RecoilSmoothMax = 1.000f;
 					float SmoothMin = 0.000f, SmoothMax = 100.000f;
 					ImGui::SliderInt("Aim Fov", &Menu::Aimbot::AimSize, FovMin, FovMax, "%d", ImGuiSliderFlags_None);
+					ImGui::SliderFloat("Aim Smooth", &Menu::Aimbot::Smooth, SmoothMin, SmoothMax, "%.001f", ImGuiSliderFlags_None);
+					ImGui::SliderFloat("RCS Smooth", &Menu::Aimbot::flRecoilAmount, RecoilSmoothMin, RecoilSmoothMax, "%.001f", ImGuiSliderFlags_None);
 
-					ImGui::SliderFloat("Smooth", &Menu::Aimbot::Smooth, SmoothMin, SmoothMax, "%.001f", ImGuiSliderFlags_None);
+					if (ImGui::Combo("Hitbox", &Menu::Aimbot::AimShotPosComb, "Head\0Neck\0Spine"))
+					{
+						switch (Menu::Aimbot::AimShotPosComb)
+						{
+						case 0:
+							Menu::Aimbot::AimPos = BoneIndex::head;
+							break;
+						case 1:
+							Menu::Aimbot::AimPos = BoneIndex::neck_0;
+							break;
+						case 2:
+							Menu::Aimbot::AimPos = BoneIndex::spine_1;
+							break;
+						}
+					}
 
 					//int BulletMin = 0, BulletMax = 6;
 					//float RecoilMin = 0.f, RecoilMax = 2.f;
@@ -126,8 +147,9 @@ void Menu::start()
 				{
 
 					ImGui::SetWindowFontScale(dpi_scale);
-					//ImGui::Checkbox("TriggerBot", &MenuConfig::TriggerBot);
-					//ImGui::Keybind("Trigger Key", &MenuConfig::TriggerHotKey, true);
+					ImGui::Checkbox("Auto Fire", &Menu::Tiggerbot::AutoFire);
+					ImGui::Checkbox("TriggerBot", &Menu::Tiggerbot::TriggerBot);
+					ImGui::Keybind("Trigger Key", &Menu::Tiggerbot::HotKey, true);
 					//if (ImGui::Combo("TriggerMode", &MenuConfig::TriggerMode, "Hold\0Toggle"))
 					//{
 					//}
@@ -138,31 +160,16 @@ void Menu::start()
 					//ImGui::Checkbox("FovCircle", &MenuConfig::ShowAimFovRange);
 
 
-					//DWORD TriggerDelayMin = 15, TriggerDelayMax = 170;
-					//ImGui::SliderInt("Delay", &TriggerBot::TriggerDelay, TriggerDelayMin, TriggerDelayMax, "%d", ImGuiSliderFlags_None);
+					DWORD TriggerDelayMin = 0, TriggerDelayMax = 300;
+					ImGui::SliderInt("Shotdelay", &Menu::Tiggerbot::TriggerShotDelay, TriggerDelayMin, TriggerDelayMax, "%d", ImGuiSliderFlags_None);
+					ImGui::SliderInt("Toggle Target delay", &Menu::Tiggerbot::TriggerTargetDelay, TriggerDelayMin, TriggerDelayMax, "%d", ImGuiSliderFlags_None);
 
 
-					if (ImGui::Combo("Hitbox", &Menu::Aimbot::AimShotPosComb, "Head\0Neck\0Spine"))
-					{
-						switch (Menu::Aimbot::AimShotPosComb)
-						{
-						case 0:
-							Menu::Aimbot::AimPos = BoneIndex::head;
-							break;
-						case 1:
-							Menu::Aimbot::AimPos = BoneIndex::neck_0;
-							break;
-						case 2:
-							Menu::Aimbot::AimPos = BoneIndex::spine_1;
-							break;
-						default:
-							break;
-						}
-					}
 
-					ImGui::Checkbox("Team Damage", &Menu::Aimbot::Team);
 
-					ImGui::ColorEdit4("Fov Circle##FovCircleColor", reinterpret_cast<float*>(&Menu::Aimbot::rectColor), ImGuiColorEditFlags_NoInputs);
+
+
+					ImGui::ColorEdit4("Tiggerbot Fov Circle##Tiggerbot FovCircleColor", reinterpret_cast<float*>(&Menu::Tiggerbot::rectColor), ImGuiColorEditFlags_NoInputs);
 				}
 				ImGui::EndChild();
 

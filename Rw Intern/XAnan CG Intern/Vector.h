@@ -14,6 +14,7 @@ struct Vector3
     Vector3 operator-(Vector3 d);
     Vector3 operator*(Vector3 d);
     Vector3 operator*(float d);
+    Vector3& operator-=(Vector3 d);
 
     // Lerp ·½·¨ÉùÃ÷
     Vector3 Lerp(const Vector3& target, float t) const;

@@ -21,6 +21,12 @@ Vector3 Vector3::operator*(float d)
     return { x * d, y * d, z * d };
 }
 
+Vector3& Vector3::operator-=(Vector3 d) {
+    Vector3 vecRes = *this - d;
+    *this = vecRes;
+    return *this;
+}
+
 Vector4 Vector4::operator+(Vector4 d)
 {
     return { x + d.x, y + d.y, w + d.w, h + d.h };

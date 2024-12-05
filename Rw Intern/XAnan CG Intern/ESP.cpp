@@ -5,7 +5,6 @@
 #include "mem Aimbot.h"
 #include "CS2_Dumper/offsets.hpp"
 #include "CS2_Dumper/client_dll.hpp"
-//thanks weedptr https://github.com/MitilcC/CS2-Internal-Cheat/issues/2
 void ESP::DrawHealth(float MaxHealth, float CurrentHealth, ImVec2 Pos, ImVec2 Size, bool Horizontal)
 {
 	ImDrawList* DrawList = ImGui::GetBackgroundDrawList();
@@ -58,6 +57,13 @@ bool ESP::Start()
 		return false;
 
 	LocalPlayer.team = Get::PlayerTeam(LocalPlayer.pawn);
+
+	if (Menu::Aimbot::showFOV)
+        Aimbot::DrawAimbotFOV();
+
+	if (Menu::Tiggerbot::TriggerBot)
+		Aimbot::DrawTiggerbotFOV();
+
 
 	for (int i{ 0 }; i < 64; ++i)
 	{
@@ -217,11 +223,7 @@ bool ESP::Start()
 			ESP::FovChange();
 		}
 
-		if (Menu::Aimbot::showFOV)
-		{
-			Aimbot::DrawAimbotFOV();
 
-		}
 	}
 
 	return true;
@@ -235,14 +237,4 @@ void ESP::FovChange()
 	auto cam_ser = cs2.read<mem::addr64>(local_player + cs2_dumper::schemas::client_dll::C_BasePlayerPawn::m_pCameraServices);
 	auto fov_addr = cam_ser + cs2_dumper::schemas::client_dll::CCSPlayerBase_CameraServices::m_iFOV;
 	cs2.write(fov_addr,Menu::ESP::FOVnumber); 
-}
-
-void ESP::ViewModelChange()
-{
-	mem::Process cs2(TEXT("cs2.exe"));
-	auto client = cs2.get_module_handle(TEXT("client.dll"));
-	auto local_player = cs2.read<mem::addr64>(client + cs2_dumper::offsets::client_dll::dwLocalPlayerPawn);
-	auto cam_ViewModelx = cs2.read<mem::addr64>(local_player + cs2_dumper::schemas::client_dll:: C_CSPlayerPawn::m_flViewmodelOffsetX);
-	cs2.write(cam_ViewModelx, Menu::ESP::FOVnumber);
-
 }

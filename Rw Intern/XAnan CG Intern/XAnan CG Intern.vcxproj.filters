@@ -26,8 +26,8 @@
     <Filter Include="sdk\dumper">
       <UniqueIdentifier>{76f32978-c5ba-46e6-b96e-b94d9bf497f0}</UniqueIdentifier>
     </Filter>
-    <Filter Include="cheat\feature\TraceShape">
-      <UniqueIdentifier>{aaea27c5-570e-4b9b-9382-4be4998cdc2f}</UniqueIdentifier>
+    <Filter Include="Interface">
+      <UniqueIdentifier>{8234f8fe-8597-421f-9f2d-a64db37c533d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -154,20 +154,26 @@
     <ClInclude Include="mem.hpp">
       <Filter>sdk</Filter>
     </ClInclude>
-    <ClInclude Include="Tiggerbot.h">
-      <Filter>cheat\feature</Filter>
-    </ClInclude>
-    <ClInclude Include="SlientAim.h">
-      <Filter>cheat\feature</Filter>
-    </ClInclude>
     <ClInclude Include="weaponcheak.hpp">
       <Filter>cheat\feature</Filter>
     </ClInclude>
-    <ClInclude Include="cgametracemanager.h">
-      <Filter>cheat\feature\TraceShape</Filter>
+    <ClInclude Include="GameTace.hpp">
+      <Filter>Interface</Filter>
     </ClInclude>
-    <ClInclude Include="memory.h">
-      <Filter>cheat\feature\TraceShape</Filter>
+    <ClInclude Include="Tace Memory.hpp">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="CUserCmd.h">
+      <Filter>Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="UtlVector.h">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="UtlMemory.h">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="CCSGOInput.hpp">
+      <Filter>sdk</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -247,20 +253,11 @@
     <ClCompile Include="Bone.cpp">
       <Filter>sdk</Filter>
     </ClCompile>
-    <ClCompile Include="Triggerbot.cpp">
-      <Filter>cheat\feature</Filter>
-    </ClCompile>
-    <ClCompile Include="SlientAim.cpp">
-      <Filter>cheat\feature</Filter>
-    </ClCompile>
     <ClCompile Include="weaponcheck.cpp">
       <Filter>cheat\feature</Filter>
     </ClCompile>
-    <ClCompile Include="cgametracemanager.cpp">
-      <Filter>cheat\feature\TraceShape</Filter>
-    </ClCompile>
-    <ClCompile Include="memory.cpp">
-      <Filter>cheat\feature\TraceShape</Filter>
+    <ClCompile Include="GameTace.cpp">
+      <Filter>Interface</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

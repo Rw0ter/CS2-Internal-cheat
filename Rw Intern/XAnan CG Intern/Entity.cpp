@@ -155,6 +155,9 @@ void Set::GlowHack(intptr_t addr)
 	*glow = 1;
 }
 
+CUtlVector<Vector3>& Get::GetAimPunch(intptr_t addr) {
+	return *reinterpret_cast<CUtlVector<Vector3>*>(addr + Offset::Pawn::m_aimPunchCache);
+}
 
 std::string Get::GetWeaponName(intptr_t addr)
 {

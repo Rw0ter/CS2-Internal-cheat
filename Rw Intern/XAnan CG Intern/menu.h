@@ -89,8 +89,10 @@ namespace Menu
 
 	namespace Aimbot
 	{
+		inline bool AimbotAlwaysOn = { false };
 		inline int AimShotPosComb = { 0 };
 		inline bool showFOV = { false };
+		inline bool bVisibleCheck = { true };
 		inline bool Client = { true };
 		inline bool TeamCheck = { true };
 		inline bool Team = { false };
@@ -99,8 +101,24 @@ namespace Menu
 		inline int32_t AimPos = { 6 };
 		inline float Smooth = { 1.0f };
 
+		inline bool bSilent = false;
+		inline bool bAutoRecoil = true;
+		inline bool bPrefectSilent = false;
+		inline float flRecoilAmount = 1.f; // 100%
+
 		inline ImColor rectColor = ImColor(0, 255, 0, 255);
 	}
+
+	namespace Tiggerbot
+	{
+		inline bool AutoFire = { false };
+		inline bool TriggerBot = { false };
+		inline int HotKey = { 18 };
+		inline int TriggerShotDelay = { 0 };
+		inline int TriggerTargetDelay = { 0 };
+		inline ImColor rectColor = ImColor(0, 255, 0, 255);
+	}
+
 
 	void start();
 }

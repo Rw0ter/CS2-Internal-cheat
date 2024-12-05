@@ -5,6 +5,14 @@
 #include "Menu.h"
 #include "imgui/font.h"
 #include "Console.h"
+#include "Tace Memory.hpp"
+#include <Windows.h>
+#include <cstdint>
+#include "kiero/minhook/include/MinHook.h"
+#include "GameState.h"
+#include "weaponcheak.hpp"
+#include "CCSGOInput.hpp"
+
 
 bool init = false;
 
@@ -46,6 +54,8 @@ LRESULT __stdcall WndProc(const HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPar
 	return CallWindowProc(oWndProc, hWnd, uMsg, wParam, lParam);
 }
 
+
+
 HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT Flags)
 {
 	if (!init)
@@ -83,17 +93,43 @@ HRESULT __stdcall hkPresent(IDXGISwapChain* pSwapChain, UINT SyncInterval, UINT 
 	return oPresent(pSwapChain, SyncInterval, Flags);
 }
 
+static void(__fastcall* fnOriginalCreateMove)(void*, int, uint8_t) = nullptr;
+static void hkCreateMove(void* pCSGOInput, int nSlot, uint8_t bActive) {
+	fnOriginalCreateMove(pCSGOInput, nSlot, bActive);
+	if (GameState::IsMatchStarted()) {
+		if (Menu::bAimBot && weaponcheck() == true) Aimbot::Start();
+	}
+}
+
+inline void(__fastcall* fnOriginalValidateInput)(CCSGOInput*, int) = nullptr;
+static void __fastcall hkValidateInput(CCSGOInput* input, int a2) {
+	Vector3 angOriginalAngle = input->GetViewAngles();
+	fnOriginalValidateInput(input, a2);
+	input->SetViewAngles(angOriginalAngle);
+}
+
+
 DWORD WINAPI MainThread(LPVOID lpReserved)
 {
 
 	PatternScan patternScan{};
-
-	Console::InitConsole();
-
+	//Console::InitConsole();
 	if (patternScan.InitPointers())
 	{
-
+		void* pCCSGOInput = CCSGOInput::Get();
+		void* pfnCreateMove = (*reinterpret_cast<void***>(pCCSGOInput))[5];
+		void* pfnValidateInput = (*reinterpret_cast<void***>(pCCSGOInput))[7];
 		bool init_hook = false;
+		MH_Initialize();
+		if (MH_CreateHook(pfnCreateMove, hkCreateMove, reinterpret_cast<void**>(&fnOriginalCreateMove)) != MH_OK || MH_EnableHook(pfnCreateMove) != MH_OK) {
+			return FALSE;
+		}
+	
+		if (MH_CreateHook(pfnValidateInput, hkValidateInput, reinterpret_cast<void**>(&fnOriginalValidateInput)) != MH_OK || MH_EnableHook(pfnValidateInput) != MH_OK) {
+			return FALSE;
+		}
+
+
 		do
 		{
 			if (kiero::init(kiero::RenderType::D3D11) == kiero::Status::Success)

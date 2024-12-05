@@ -42,6 +42,7 @@ namespace Offset
 		inline constexpr intptr_t IsAlive{ cs2_dumper::schemas::client_dll::CCSPlayerController::m_bPawnIsAlive };
 		inline constexpr intptr_t CurrentArmor{ cs2_dumper::schemas::client_dll::C_CSPlayerPawn::m_ArmorValue };
 		inline constexpr intptr_t pClippingWeapon{ cs2_dumper::schemas::client_dll::C_CSPlayerPawnBase::m_pClippingWeapon };
+		inline constexpr intptr_t m_aimPunchCache{ cs2_dumper::schemas::client_dll::C_CSPlayerPawn::m_aimPunchCache };
 		inline constexpr intptr_t bSpottedByMask = cs2_dumper::schemas::client_dll::C_CSPlayerPawn::m_entitySpottedState + cs2_dumper::schemas::client_dll::EntitySpottedState_t::m_bSpottedByMask;	// C_CSPlayerPawn::entitySpottedState + EntitySpottedState_t::bSpottedByMask
 		inline constexpr intptr_t m_Glow = cs2_dumper::schemas::client_dll::C_BaseModelEntity::m_Glow;
 		inline constexpr intptr_t m_GlowOverride = cs2_dumper::schemas::client_dll::CGlowProperty::m_glowColorOverride;
