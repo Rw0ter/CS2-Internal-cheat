@@ -23,6 +23,9 @@
  【特别感谢SYR1337】
 
 
+·编译时请选择Release，否则你会收到两个报错
+
+
 ·搬运请注明出处！
 
 -EN
@@ -50,5 +53,7 @@ Features:
 【Thanks SYR1337】 
 【Thanks SYR1337】
 
+
+·编译时请选择Release，否则你会收到两个报错
 
 Please indicate the source for handling!
