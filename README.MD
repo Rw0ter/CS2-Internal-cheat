@@ -54,6 +54,6 @@ Features:
 【Thanks SYR1337】
 
 
-·编译时请选择Release，否则你会收到两个报错
+·Please select "Release" during compilation, otherwise you will receive two error messages.
 
 Please indicate the source for handling!
