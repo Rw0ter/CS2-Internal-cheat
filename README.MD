@@ -16,7 +16,7 @@ CS2 内部辅助（dll）
 ^*自动扳机*^
 ^*FOV更改*^
 
-![image](In Game.png)
+![image](https://github.com/Rw0ter/CS2-Internal-cheat/blob/main/Rw%20cheat%20V2.png)
 
 
  【特别感谢SYR1337】
