@@ -6,12 +6,14 @@
 #include "mem.hpp"
 #include "CUserCmd.h"
 #include "weaponcheak.hpp"
+#include "Entity.h"
 
 #include "CCSGOInput.hpp"
 
 Vector3 LastAngles{};
 bool ShotFired = false;
 Vector3 WantAngele{};
+int32_t AimPos;
 
 
 mem::Process cs2(TEXT("cs2.exe"));
@@ -32,7 +34,6 @@ std::optional<Vector3> GetLocalEye()  noexcept {
 	auto* ViewOffset = reinterpret_cast<Vector3*>(LocalPlayer.pawn + cs2_dumper::schemas::client_dll::C_BaseModelEntity::m_vecViewOffset);
 
 	Vector3 LocalEye = *Origin + *ViewOffset;
-	printf(" LocalEye Vec3   x: %f y : %f z : %f\n", LocalEye.x, LocalEye.y, LocalEye.z);
 	if (!std::isfinite(LocalEye.x) || !std::isfinite(LocalEye.y) || !std::isfinite(LocalEye.z))
 		return std::nullopt;
 
@@ -139,40 +140,168 @@ bool Aimbot::GetBestTarget()
 		auto LocalEye = GetLocalEye();
 		auto EntityEye = GetEntityEye(Entity);
 
+		//头部
+		Vector3 HeadPos = Get::BonePos(Entity.pawn, BoneIndex::head);
+		//躯干
+		Vector3 NeckPos = Get::BonePos(Entity.pawn, BoneIndex::neck_0);
+		Vector3 Spine1Pos = Get::BonePos(Entity.pawn, BoneIndex::spine_1);
+		Vector3 Spine2Pos = Get::BonePos(Entity.pawn, BoneIndex::spine_2);
+		Vector3 PelvisPos = Get::BonePos(Entity.pawn, BoneIndex::pelvis);
+		//左手臂
+		Vector3 ArmUpperLPos = Get::BonePos(Entity.pawn, BoneIndex::arm_upper_L);
+		Vector3 ArmLowerLPos = Get::BonePos(Entity.pawn, BoneIndex::arm_lower_L);
+		Vector3 handLPos = Get::BonePos(Entity.pawn, BoneIndex::hand_L);
+		//右手臂
+		Vector3 ArmUpperRPos = Get::BonePos(Entity.pawn, BoneIndex::arm_upper_R);
+		Vector3 ArmLowerRPos = Get::BonePos(Entity.pawn, BoneIndex::arm_lower_R);
+		Vector3 handRPos = Get::BonePos(Entity.pawn, BoneIndex::hand_R);
+		//左腿
+		Vector3 LegUpperLPos = Get::BonePos(Entity.pawn, BoneIndex::leg_upper_L);
+		Vector3 LegLowerLPos = Get::BonePos(Entity.pawn, BoneIndex::leg_lower_L);
+		Vector3 AnkleLPos = Get::BonePos(Entity.pawn, BoneIndex::ankle_L);
+		//右腿
+		Vector3 LegUpperRPos = Get::BonePos(Entity.pawn, BoneIndex::leg_upper_R);
+		Vector3 LegLowerRPos = Get::BonePos(Entity.pawn, BoneIndex::leg_lower_R);
+		Vector3 AnkleRPos = Get::BonePos(Entity.pawn, BoneIndex::ankle_R);
+
+
+		Vector3 TempAimPos;
+		Vector3 EndPos{};
+		Vector3 Window = Get::WindowSize();
 
 
 		if (Menu::Aimbot::bVisibleCheck) {
+			//多部位可视判断
 			void* pawnPtr = reinterpret_cast<void*>(LocalPlayer.pawn);
-			CGameTrace pTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), EntityEye.value(), pawnPtr);
-			if (!pTrace.IsVisible()) {
+			//头部可视判断
+			CGameTrace EyepTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), EntityEye.value(), pawnPtr);
+			//躯干可视判断
+			CGameTrace NeckpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), NeckPos, pawnPtr);
+			CGameTrace Spine1pTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), Spine1Pos, pawnPtr);
+			CGameTrace Spine2pTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), Spine2Pos, pawnPtr);
+			CGameTrace PelvispTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), PelvisPos, pawnPtr);
+			//左手臂可视判断
+			CGameTrace ArmUpperLpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), ArmUpperLPos, pawnPtr);
+			CGameTrace ArmLowerLpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), ArmLowerLPos, pawnPtr);
+			CGameTrace handLpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), handLPos, pawnPtr);
+			//右手臂可视判断
+			CGameTrace ArmUpperRpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), ArmUpperRPos, pawnPtr);
+			CGameTrace ArmLowerRpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), ArmLowerRPos, pawnPtr);
+			CGameTrace handRpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), handRPos, pawnPtr);
+			//左腿可视判断
+			CGameTrace LegUpperLpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), LegUpperLPos, pawnPtr);
+			CGameTrace LegLowerLpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), LegLowerLPos, pawnPtr);
+			CGameTrace AnkleLpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), AnkleLPos, pawnPtr);
+			//右腿可视判断
+			CGameTrace LegUpperRpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), LegUpperRPos, pawnPtr);
+			CGameTrace LegLowerRpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), LegLowerRPos, pawnPtr);
+			CGameTrace AnkleRpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), AnkleRPos, pawnPtr);
+
+
+
+			if (!EyepTrace.IsVisible() &&
+				!NeckpTrace.IsVisible() && !Spine1pTrace.IsVisible() && !Spine2pTrace.IsVisible() && !PelvispTrace.IsVisible() &&
+				!ArmUpperLpTrace.IsVisible() && !ArmLowerLpTrace.IsVisible() && !handLpTrace.IsVisible() &&
+				!ArmUpperRpTrace.IsVisible() && !ArmLowerRpTrace.IsVisible() && !handRpTrace.IsVisible() &&
+				!LegUpperLpTrace.IsVisible() && !LegLowerLpTrace.IsVisible() && !AnkleLpTrace.IsVisible() &&
+				!LegUpperRpTrace.IsVisible() && !LegLowerRpTrace.IsVisible() && !AnkleRpTrace.IsVisible())
 				continue;
-			}
-		}
-
-		Vector3 AimPos = Get::BonePos(Entity.pawn, Menu::Aimbot::AimPos);
-		printf("aimpos Vec3  x: %f y : %f z : %f\n", AimPos.x, AimPos.y, AimPos.z);
-		Vector3 EndPos{};
 
 
 
-
-		Vector3 Window = Get::WindowSize();
-
-		if (!Utils::WorldToScreen(AimPos, EndPos, Address::GetViewMatrixPtr(), Window.x, Window.y))
-			continue;
-
-		if (EndPos.x > Window.x / 2 - Menu::Aimbot::AimSize && EndPos.x < Window.x / 2 + Menu::Aimbot::AimSize && EndPos.y > Window.y / 2 - Menu::Aimbot::AimSize && EndPos.y < Window.y / 2 + Menu::Aimbot::AimSize)
-		{
-			int left = Window.x / 2 - EndPos.x ;
-			int right = Window.y / 2 - EndPos.y;
-			Distance = Math::distance(left,right);
-			if(Distance < LastDistance)
-			{
+			if (EyepTrace.IsVisible()) {
+				printf("现在锁头\n");
+				TempAimPos = HeadPos;
+				AimPos = BoneIndex::head;
+				Target::addr = Entity.pawn;
 				bHasScanTarget = true;
-				LastDistance = Distance;
-				Target::addr= Entity.pawn;
 			}
+			else if (NeckpTrace.IsVisible() || Spine1pTrace.IsVisible() || Spine2pTrace.IsVisible() || PelvispTrace.IsVisible()) {
+				printf("现在锁躯干\n");
+				Vector3 BonePositions[4] = {
+				  NeckPos,
+				  Spine1Pos,
+				  Spine2Pos,
+				  PelvisPos
+				};
+				int32_t BoneTempIndex[4] = {
+					BoneIndex::neck_0,
+					BoneIndex::spine_1,
+					BoneIndex::spine_2,
+					BoneIndex::pelvis
+				};
+				for (int i{ 0 }; i < 4; ++i) {
+					TempAimPos = BonePositions[i]; // 当前骨骼点位置
+					// 骨骼点转屏幕坐标
+					if (!Utils::WorldToScreen(TempAimPos, EndPos, Address::GetViewMatrixPtr(), Window.x, Window.y))
+						continue;
+					int left = Window.x / 2 - EndPos.x;
+					int right = Window.y / 2 - EndPos.y;
+					float Distance = Math::distance(left, right);
+					if (Distance < LastDistance) {
+						LastDistance = Distance;
+						AimPos = BoneTempIndex[i]; // 瞄准点更新为当前骨骼点
+						Target::addr = Entity.pawn;
+						bHasScanTarget = true;
+					}
+				}
+			}
+			else if (ArmUpperLpTrace.IsVisible() || ArmLowerLpTrace.IsVisible() || handLpTrace.IsVisible() ||
+				   ArmUpperRpTrace.IsVisible() || ArmLowerRpTrace.IsVisible() || handRpTrace.IsVisible() ||
+				   LegUpperLpTrace.IsVisible() || LegLowerLpTrace.IsVisible() || AnkleLpTrace.IsVisible() ||
+				    LegUpperRpTrace.IsVisible() || LegLowerRpTrace.IsVisible() || AnkleRpTrace.IsVisible()) {
+				     printf("现在锁四肢\n");
+				     Vector3 BonePositions[12] = {
+						 ArmUpperLPos,
+						ArmLowerLPos,
+						handLPos,
+						ArmUpperRPos,
+						ArmLowerRPos,
+						handRPos,
+						LegUpperLPos,
+						LegLowerLPos,
+						AnkleLPos,
+						LegUpperRPos,
+						LegLowerRPos,
+						AnkleRPos
+
+				     };
+				     int32_t BoneTempIndex[12] = {
+					    BoneIndex::arm_upper_L,
+					    BoneIndex::arm_lower_L,
+					    BoneIndex::hand_L,
+					    BoneIndex::arm_upper_R,
+					    BoneIndex::arm_lower_R,
+					    BoneIndex::hand_R,
+					    BoneIndex::leg_upper_L,
+					    BoneIndex::leg_lower_L,
+					    BoneIndex::ankle_L,
+					    BoneIndex::leg_upper_R,
+					    BoneIndex::leg_lower_R,
+					    BoneIndex::ankle_R
+				     };
+
+				      for (int i{ 0 }; i < 12; ++i) {
+					      TempAimPos = BonePositions[i]; // 当前骨骼点位置
+					      if (!Utils::WorldToScreen(TempAimPos, EndPos, Address::GetViewMatrixPtr(), Window.x, Window.y))
+					   	      continue;
+					      int left = Window.x / 2 - EndPos.x;
+					      int right = Window.y / 2 - EndPos.y;
+					      float Distance = Math::distance(left, right);
+					      if (Distance < LastDistance) {
+						   LastDistance = Distance;
+						   AimPos = BoneTempIndex[i]; // 瞄准点更新为当前骨骼点
+						   Target::addr = Entity.pawn;
+						   printf("最近四肢的Bone索引是： %d\n", BoneTempIndex[i]);
+						   bHasScanTarget = true;
+					      }
+				      }
+
+			     }
+
 		}
+		
+
 	}
 
 	return bHasScanTarget;
@@ -248,7 +377,8 @@ bool Aimbot::ShotTarget()
 	CUtlVector<Vector3>& vecAimPunchs = Get::GetAimPunch(LocalPlayer.pawn);
 
 	Vector3 vecCameraAngles = CCSGOInput::Get()->GetViewAngles();
-	Vector3 targetAngle = Aimbot::GetTargetAngle(Get::BonePos(Target::addr, Menu::Aimbot::AimPos)); 
+	Vector3 targetAngle = Aimbot::GetTargetAngle(Get::BonePos(Target::addr, AimPos)); 
+	printf("Aimpos:  %d\n",AimPos);
 	if (vecAimPunchs.Count() > 0 && vecAimPunchs.Count() < 0xFFFF) {
 		Vector3 vecAimPunch = vecAimPunchs.Element(vecAimPunchs.Count() - 1);
 		targetAngle -= ((vecAimPunch * 2.f) * flRecoilAmount);
@@ -321,6 +451,7 @@ void Aimbot::DrawAimbotFOV()
 
 void Aimbot::Tiggerbot()
 {
+	bool shouldShoot = false;//射击变量
 	Player LocalPlayer{};
 	LocalPlayer.control = Address::GetLocalPlayerControl();
 
@@ -370,40 +501,328 @@ void Aimbot::Tiggerbot()
 		if (!LocalEye || !EntityEye)
 			continue;
 
-		void* pawnPtr = reinterpret_cast<void*>(LocalPlayer.pawn);
-		CGameTrace pTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), EntityEye.value(), pawnPtr);
-		if (!pTrace.IsVisible())
-			continue;
 
-		Vector3 AimPos = Get::BonePos(Entity.pawn, Menu::Aimbot::AimPos);
-		Vector3 EndPos{};
+		//头部
+		Vector3 HeadPos = Get::BonePos(Entity.pawn, BoneIndex::head);
+		//躯干
+		Vector3 NeckPos = Get::BonePos(Entity.pawn, BoneIndex::neck_0);
+		Vector3 Spine1Pos = Get::BonePos(Entity.pawn, BoneIndex::spine_1);
+		Vector3 Spine2Pos = Get::BonePos(Entity.pawn, BoneIndex::spine_2);
+		Vector3 PelvisPos = Get::BonePos(Entity.pawn, BoneIndex::pelvis);
+		//左手臂
+		Vector3 ArmUpperLPos = Get::BonePos(Entity.pawn, BoneIndex::arm_upper_L);
+		Vector3 ArmLowerLPos = Get::BonePos(Entity.pawn, BoneIndex::arm_lower_L);
+		Vector3 handLPos = Get::BonePos(Entity.pawn, BoneIndex::hand_L);
+		//右手臂
+		Vector3 ArmUpperRPos = Get::BonePos(Entity.pawn, BoneIndex::arm_upper_R);
+		Vector3 ArmLowerRPos = Get::BonePos(Entity.pawn, BoneIndex::arm_lower_R);
+		Vector3 handRPos = Get::BonePos(Entity.pawn, BoneIndex::hand_R);
+		//左腿
+		Vector3 LegUpperLPos = Get::BonePos(Entity.pawn, BoneIndex::leg_upper_L);
+		Vector3 LegLowerLPos = Get::BonePos(Entity.pawn, BoneIndex::leg_lower_L);
+		Vector3 AnkleLPos = Get::BonePos(Entity.pawn, BoneIndex::ankle_L);
+		//右腿
+		Vector3 LegUpperRPos = Get::BonePos(Entity.pawn, BoneIndex::leg_upper_R);
+		Vector3 LegLowerRPos = Get::BonePos(Entity.pawn, BoneIndex::leg_lower_R);
+		Vector3 AnkleRPos = Get::BonePos(Entity.pawn, BoneIndex::ankle_R);
+
+		//printf("HeadPos Vec3  x: %f y : %f z : %f\n", HeadPos.x, HeadPos.y, HeadPos.z);
+		//printf("NeckPos Vec3  x: %f y : %f z : %f\n", NeckPos.x, NeckPos.y, NeckPos.z);
+		//printf("Spine1Pos Vec3  x: %f y : %f z : %f\n", Spine1Pos.x, Spine1Pos.y, Spine1Pos.z);
+		//printf("Spine2Pos Vec3  x: %f y : %f z : %f\n", Spine2Pos.x, Spine2Pos.y, Spine2Pos.z);
+		//printf("PelvisPos Vec3  x: %f y : %f z : %f\n", PelvisPos.x, PelvisPos.y, PelvisPos.z);
+		//printf("ArmLPos Vec3  x: %f y : %f z : %f\n", ArmUpperLPos.x, ArmUpperLPos.y, ArmUpperLPos.z);
+		//printf("ArmRPos Vec3  x: %f y : %f z : %f\n", ArmUpperRPos.x, ArmUpperRPos.y, ArmUpperRPos.z);
+		
+		
+		Vector3 HeadEndPos{};
+		Vector3 NeckEndPos{};
+		Vector3 Spine1EndPos{};
+		Vector3 Spine2EndPos{};
+		Vector3 PelvisEndPos{};
+
+		Vector3 ArmLEndPos{};
+		Vector3 ArmL2EndPos{};
+		Vector3 handLEndPos{};
+
+		Vector3 ArmREndPos{};
+		Vector3 ArmR2EndPos{};
+		Vector3 handREndPos{};
+
+
+		Vector3 LegLEndPos{};
+		Vector3 LegL2EndPos{};
+		Vector3 AnkleLEndPos{};
+
+		Vector3 LegREndPos{};
+		Vector3 LegR2EndPos{};
+		Vector3 AnkleREndPos{};
+
 		Vector3 Window = Get::WindowSize();
 
-		if (!Utils::WorldToScreen(AimPos, EndPos, Address::GetViewMatrixPtr(), Window.x, Window.y))
+		bool ToScreen1 = false;
+		bool ToScreen2 = false;
+		bool ToScreen3 = false;
+		bool ToScreen4 = false;
+		bool ToScreen5 = false;
+		bool ToScreen6 = false;
+		bool ToScreen7 = false;
+		bool ToScreen8 = false;
+		bool ToScreen9 = false;
+		bool ToScreen10 = false;
+		bool ToScreen11 = false;
+		bool ToScreen12 = false;
+		bool ToScreen13 = false;
+		bool ToScreen14 = false;
+		bool ToScreen15 = false;
+		bool ToScreen16 = false;
+		bool ToScreen17 = false;
+
+		ToScreen1 = Utils::WorldToScreen(HeadPos, HeadEndPos, Address::GetViewMatrixPtr(), Window.x, Window.y);
+		ToScreen2 = Utils::WorldToScreen(NeckPos, NeckEndPos, Address::GetViewMatrixPtr(), Window.x, Window.y);
+		ToScreen3 = Utils::WorldToScreen(Spine1Pos, Spine1EndPos, Address::GetViewMatrixPtr(), Window.x, Window.y);
+		ToScreen4 = Utils::WorldToScreen(Spine2Pos, Spine2EndPos, Address::GetViewMatrixPtr(), Window.x, Window.y);
+		ToScreen5 = Utils::WorldToScreen(PelvisPos, PelvisEndPos, Address::GetViewMatrixPtr(), Window.x, Window.y);
+
+		ToScreen6 = Utils::WorldToScreen(ArmUpperLPos, ArmLEndPos, Address::GetViewMatrixPtr(), Window.x, Window.y);
+		ToScreen7 = Utils::WorldToScreen(ArmLowerLPos, ArmL2EndPos, Address::GetViewMatrixPtr(), Window.x, Window.y);
+		ToScreen8 = Utils::WorldToScreen(handLPos, handLEndPos, Address::GetViewMatrixPtr(), Window.x, Window.y);
+
+		ToScreen9 = Utils::WorldToScreen(ArmUpperRPos, ArmREndPos, Address::GetViewMatrixPtr(), Window.x, Window.y);
+		ToScreen10 = Utils::WorldToScreen(ArmLowerRPos, ArmR2EndPos, Address::GetViewMatrixPtr(), Window.x, Window.y);
+		ToScreen11 = Utils::WorldToScreen(handRPos, ArmLEndPos, Address::GetViewMatrixPtr(), Window.x, Window.y);
+
+		ToScreen12 = Utils::WorldToScreen(LegUpperLPos, LegLEndPos, Address::GetViewMatrixPtr(), Window.x, Window.y);
+		ToScreen13 = Utils::WorldToScreen(LegLowerLPos, LegL2EndPos, Address::GetViewMatrixPtr(), Window.x, Window.y);
+		ToScreen14 = Utils::WorldToScreen(AnkleLPos, AnkleLEndPos, Address::GetViewMatrixPtr(), Window.x, Window.y);
+
+		ToScreen15 = Utils::WorldToScreen(LegUpperRPos, LegREndPos, Address::GetViewMatrixPtr(), Window.x, Window.y);
+		ToScreen16 = Utils::WorldToScreen(LegLowerRPos, LegR2EndPos, Address::GetViewMatrixPtr(), Window.x, Window.y);
+		ToScreen17 = Utils::WorldToScreen(AnkleRPos, AnkleREndPos, Address::GetViewMatrixPtr(), Window.x, Window.y);
+
+		//printf("head %d\n", ToScreen1);
+		//printf("neck %d\n", ToScreen2);
+		//printf("spi1 %d\n", ToScreen3);
+		//printf("spi2 %d\n", ToScreen4);
+		//printf("pelv %d\n", ToScreen5);
+		//printf("arm1 %d\n", ToScreen6);
+		//printf("arm2 %d\n", ToScreen7);
+
+		void* pawnPtr = reinterpret_cast<void*>(LocalPlayer.pawn);
+		//头部可视判断
+		CGameTrace EyepTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), EntityEye.value(), pawnPtr);
+		//躯干可视判断
+		CGameTrace NeckpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), NeckPos, pawnPtr);
+		CGameTrace Spine1pTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), Spine1Pos, pawnPtr);
+		CGameTrace Spine2pTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), Spine2Pos, pawnPtr);
+		CGameTrace PelvispTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), PelvisPos, pawnPtr);
+		//左手臂可视判断
+		CGameTrace ArmUpperLpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), ArmUpperLPos, pawnPtr);
+		CGameTrace ArmLowerLpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), ArmLowerLPos, pawnPtr);
+		CGameTrace handLpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), handLPos, pawnPtr);
+		//右手臂可视判断
+		CGameTrace ArmUpperRpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), ArmUpperRPos, pawnPtr);
+		CGameTrace ArmLowerRpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), ArmLowerRPos, pawnPtr);
+		CGameTrace handRpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), handRPos, pawnPtr);
+		//左腿可视判断
+		CGameTrace LegUpperLpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), LegUpperLPos, pawnPtr);
+		CGameTrace LegLowerLpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), LegLowerLPos, pawnPtr);
+		CGameTrace AnkleLpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), AnkleLPos, pawnPtr);
+		//右腿可视判断
+		CGameTrace LegUpperRpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), LegUpperRPos, pawnPtr);
+		CGameTrace LegLowerRpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), LegLowerRPos, pawnPtr);
+		CGameTrace AnkleRpTrace = CEngineTrace::Get()->TraceShape(LocalEye.value(), AnkleRPos, pawnPtr);
+		
+		if (!EyepTrace.IsVisible() &&
+			!NeckpTrace.IsVisible() && !Spine1pTrace.IsVisible() && !Spine2pTrace.IsVisible() && !PelvispTrace.IsVisible() &&
+			!ArmUpperLpTrace.IsVisible() && !ArmLowerLpTrace.IsVisible() && !handLpTrace.IsVisible() &&
+			!ArmUpperRpTrace.IsVisible() && !ArmLowerRpTrace.IsVisible() && !handRpTrace.IsVisible() &&
+			!LegUpperLpTrace.IsVisible() && !LegLowerLpTrace.IsVisible() && !AnkleLpTrace.IsVisible() &&
+			!LegUpperRpTrace.IsVisible() && !LegLowerRpTrace.IsVisible() && !AnkleRpTrace.IsVisible())
 			continue;
+
+
+		//多部位屏幕可见判断
+		if (!ToScreen1 && !ToScreen2 &&!ToScreen3 && !ToScreen4 &&!ToScreen5 && !ToScreen6 && !ToScreen7 && !ToScreen8 && !ToScreen9 && !ToScreen10 && !ToScreen11 && !ToScreen12 && !ToScreen13 && !ToScreen14 && !ToScreen15 && !ToScreen16 && !ToScreen17)
+			continue;
+
+
+		//printf("HeadEndPos Vec3  x: %f y : %f z : %f\n", HeadEndPos.x, HeadEndPos.y, HeadEndPos.z);
+		//printf("NeckEndPos Vec3  x: %f y : %f z : %f\n", NeckEndPos.x, NeckEndPos.y, NeckEndPos.z);
+		//printf("Spine1EndPos Vec3  x: %f y : %f z : %f\n", Spine1EndPos.x, Spine1EndPos.y, Spine1EndPos.z);
+		//printf("Spine2EndPos Vec3  x: %f y : %f z : %f\n", Spine2EndPos.x, Spine2EndPos.y, Spine2EndPos.z);
+		//printf("PelvisEndPos Vec3  x: %f y : %f z : %f\n", PelvisEndPos.x, PelvisEndPos.y, PelvisEndPos.z);
+		//printf("ArmLEndPos Vec3  x: %f y : %f z : %f\n", ArmLEndPos.x, ArmLEndPos.y, ArmLEndPos.z);
+		//printf("ArmREndPos Vec3  x: %f y : %f z : %f\n", ArmREndPos.x, ArmREndPos.y, ArmREndPos.z);
 
 		ImVec2 windowSize = ImGui::GetIO().DisplaySize;
 		ImVec2 screenCenter = ImVec2(windowSize.x / 2, windowSize.y / 2);
-		int TiggerSize = 5;
+		int TiggerSize = 5;//触发fov
 
-		if (EndPos.x > screenCenter.x - TiggerSize && EndPos.x < screenCenter.x + TiggerSize &&
-			EndPos.y > screenCenter.y - TiggerSize && EndPos.y < screenCenter.y + TiggerSize)
+
+		//触发检查
+
+		//head 
+		if (HeadEndPos.x > screenCenter.x - TiggerSize && HeadEndPos.x < screenCenter.x + TiggerSize &&
+			HeadEndPos.y > screenCenter.y - TiggerSize && HeadEndPos.y < screenCenter.y + TiggerSize)
 		{
-			int Distance = Math::distance(screenCenter.x - EndPos.x, screenCenter.y - EndPos.y);
+			printf("1\n");
+			shouldShoot = true;
 
-			if (Distance < LastDistance && GetAsyncKeyState(Menu::Tiggerbot::HotKey) && !Menu::ShowMenu && weaponcheck() == true)
-			{
-				LastDistance = Distance;
-				static auto lastShotTime = std::chrono::high_resolution_clock::now();
-				auto currentTime = std::chrono::high_resolution_clock::now();
-				auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastShotTime).count();
-				if (elapsedTime >= Menu::Tiggerbot::TriggerTargetDelay) {
-					mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
-					mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
-					lastShotTime = std::chrono::high_resolution_clock::now();
-					break; 
-				}
-			}
+		}
+
+		//Neck
+		if (NeckEndPos.x > screenCenter.x - TiggerSize && NeckEndPos.x < screenCenter.x + TiggerSize &&
+			NeckEndPos.y > screenCenter.y - TiggerSize && NeckEndPos.y < screenCenter.y + TiggerSize)
+		{
+			printf("2\n");
+			shouldShoot = true;
+
+		}
+
+		// Spine1
+		if (Spine1EndPos.x > screenCenter.x - TiggerSize && Spine1EndPos.x < screenCenter.x + TiggerSize &&
+			Spine1EndPos.y > screenCenter.y - TiggerSize && Spine1EndPos.y < screenCenter.y + TiggerSize)
+		{
+			printf("3\n");
+			shouldShoot = true;
+
+		}
+
+
+		//Spine2
+		if (Spine2EndPos.x > screenCenter.x - TiggerSize && Spine2EndPos.x < screenCenter.x + TiggerSize &&
+			Spine2EndPos.y > screenCenter.y - TiggerSize && Spine2EndPos.y < screenCenter.y + TiggerSize)
+		{
+			printf("4\n");
+			shouldShoot = true;
+
+		}
+
+		// Pelvis
+		if (PelvisEndPos.x > screenCenter.x - TiggerSize && PelvisEndPos.x < screenCenter.x + TiggerSize &&
+			PelvisEndPos.y > screenCenter.y - TiggerSize && PelvisEndPos.y < screenCenter.y + TiggerSize)
+		{
+			printf("5\n");
+			shouldShoot = true;
+		}
+
+
+		//ArmL
+		if (ArmLEndPos.x > screenCenter.x - TiggerSize && ArmLEndPos.x < screenCenter.x + TiggerSize &&
+			ArmLEndPos.y > screenCenter.y - TiggerSize && ArmLEndPos.y < screenCenter.y + TiggerSize)
+		{
+			printf("6\n");
+			shouldShoot = true;
+		}
+
+		//ArmL2
+		if (ArmL2EndPos.x > screenCenter.x - TiggerSize && ArmL2EndPos.x < screenCenter.x + TiggerSize &&
+			ArmL2EndPos.y > screenCenter.y - TiggerSize && ArmL2EndPos.y < screenCenter.y + TiggerSize)
+		{
+			printf("7\n");
+			shouldShoot = true;
+		}
+
+		//handL
+		if (handLEndPos.x > screenCenter.x - TiggerSize && handLEndPos.x < screenCenter.x + TiggerSize &&
+			handLEndPos.y > screenCenter.y - TiggerSize && handLEndPos.y < screenCenter.y + TiggerSize)
+		{
+			printf("8\n");
+			shouldShoot = true;
+		}
+
+
+		//ArmR
+		if (ArmREndPos.x > screenCenter.x - TiggerSize && ArmREndPos.x < screenCenter.x + TiggerSize &&
+			ArmREndPos.y > screenCenter.y - TiggerSize && ArmREndPos.y < screenCenter.y + TiggerSize)
+		{
+			printf("9\n");
+			shouldShoot = true;
+		}
+
+
+		//ArmR2
+		if (ArmR2EndPos.x > screenCenter.x - TiggerSize && ArmR2EndPos.x < screenCenter.x + TiggerSize &&
+			ArmR2EndPos.y > screenCenter.y - TiggerSize && ArmR2EndPos.y < screenCenter.y + TiggerSize)
+		{
+			printf("10\n");
+			shouldShoot = true;
+		}
+
+		//handR
+		if (handREndPos.x > screenCenter.x - TiggerSize && handREndPos.x < screenCenter.x + TiggerSize &&
+			handREndPos.y > screenCenter.y - TiggerSize && handREndPos.y < screenCenter.y + TiggerSize)
+		{
+			printf("11\n");
+			shouldShoot = true;
+		}
+
+		//LegL
+		if (LegLEndPos.x > screenCenter.x - TiggerSize && LegLEndPos.x < screenCenter.x + TiggerSize &&
+			LegLEndPos.y > screenCenter.y - TiggerSize && LegLEndPos.y < screenCenter.y + TiggerSize)
+		{
+			printf("12\n");
+			shouldShoot = true;
+		}
+
+
+		//LegL2
+		if (LegL2EndPos.x > screenCenter.x - TiggerSize && LegL2EndPos.x < screenCenter.x + TiggerSize &&
+			LegL2EndPos.y > screenCenter.y - TiggerSize && LegL2EndPos.y < screenCenter.y + TiggerSize)
+		{
+			printf("13\n");
+			shouldShoot = true;
+		}
+
+		//AnkleL
+		if (AnkleLEndPos.x > screenCenter.x - TiggerSize && AnkleLEndPos.x < screenCenter.x + TiggerSize &&
+			AnkleLEndPos.y > screenCenter.y - TiggerSize && AnkleLEndPos.y < screenCenter.y + TiggerSize)
+		{
+			printf("14\n");
+			shouldShoot = true;
+		}
+
+
+		//LegR
+		if (LegREndPos.x > screenCenter.x - TiggerSize && LegREndPos.x < screenCenter.x + TiggerSize &&
+			LegREndPos.y > screenCenter.y - TiggerSize && LegREndPos.y < screenCenter.y + TiggerSize)
+		{
+			printf("15\n");
+			shouldShoot = true;
+		}
+
+
+		//LegR2
+		if (LegR2EndPos.x > screenCenter.x - TiggerSize && LegR2EndPos.x < screenCenter.x + TiggerSize &&
+			LegR2EndPos.y > screenCenter.y - TiggerSize && LegR2EndPos.y < screenCenter.y + TiggerSize)
+		{
+			printf("16\n");
+			shouldShoot = true;
+		}
+
+		//AnkleR
+		if (AnkleREndPos.x > screenCenter.x - TiggerSize && AnkleREndPos.x < screenCenter.x + TiggerSize &&
+			AnkleREndPos.y > screenCenter.y - TiggerSize && AnkleREndPos.y < screenCenter.y + TiggerSize)
+		{
+			printf("17\n");
+			shouldShoot = true;
+		}
+
+
+
+
+	}
+
+	// 在循环外执行射击动作
+	if (shouldShoot && GetAsyncKeyState(Menu::Tiggerbot::HotKey) && !Menu::ShowMenu && weaponcheck()) {
+		auto currentTime = std::chrono::high_resolution_clock::now();
+		static auto lastShotTime = std::chrono::high_resolution_clock::now();
+		auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(currentTime - lastShotTime).count();
+		if (elapsedTime >= Menu::Tiggerbot::TriggerTargetDelay) {
+			mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+			mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+			lastShotTime = currentTime;
 		}
 	}
 }
