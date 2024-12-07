@@ -9,12 +9,14 @@ CS2 内部辅助（dll）
 ·本项目对比原版添加了以下特性：
 ^*自瞄平滑*^
 ^*可视检查*^
+^*手持武器检查*^
 ^*静默自瞄*^
 ^*完美静默自瞄*^
 ^*RCS后坐力控制系统*^
 ^*自动开火*^
 ^*自动扳机*^
 ^*FOV更改*^
+
 
 ![image](https://github.com/Rw0ter/CS2-Internal-cheat/blob/main/Rw%20cheat%20V2.png)
 ![image](https://github.com/Rw0ter/CS2-Internal-cheat/blob/main/In%20Game.png)
@@ -42,6 +44,7 @@ This project is now ready to compile and use!
 ·Add Features: 
 ^*Aimbot Smooth*^
 ^*Visible Check*^
+^*Weapon Check*^
 ^*Silent aim*^
 ^*Perfect Silent aim*^
 ^*RCS (Recoil Control System)*^
