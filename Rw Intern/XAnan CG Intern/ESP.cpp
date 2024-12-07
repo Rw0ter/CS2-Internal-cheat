@@ -61,8 +61,6 @@ bool ESP::Start()
 	if (Menu::Aimbot::showFOV)
         Aimbot::DrawAimbotFOV();
 
-	if (Menu::Tiggerbot::TriggerBot)
-		Aimbot::DrawTiggerbotFOV();
 
 
 	for (int i{ 0 }; i < 64; ++i)
@@ -152,12 +150,12 @@ bool ESP::Start()
 		if(Menu::ESP::Glow)
 			Set::GlowHack(Entity.pawn);
 		
-		if (Menu::ESP::Box) 
+		if (Menu::ESP::Box)
 		{
-			if(Menu::ESP::BoxType == 0)
-			    ImGui::GetBackgroundDrawList()->AddRect(ImVec2(x, y), ImVec2(x + width, y + height), Menu::Color::BoxColor, 3);
+			if (Menu::ESP::BoxType == 0)
+				ImGui::GetBackgroundDrawList()->AddRect(ImVec2(x, y),ImVec2(x + width, y + height),Menu::Color::BoxColor,  0.0f , 0 , 2.0f);
 			else
-				ImGui::GetBackgroundDrawList()->AddRectFilled(ImVec2(x, y), ImVec2(x + width, y + height), Menu::Color::FilledColor, 3);
+				ImGui::GetBackgroundDrawList()->AddRectFilled(ImVec2(x, y),ImVec2(x + width, y + height),Menu::Color::FilledColor,0.0f);
 		}
 
 		if (Menu::ESP::Line)
@@ -180,7 +178,7 @@ bool ESP::Start()
 		if (Menu::ESP::Name)
 		{
 			ImGui::PushFont(chinesefont);
-			ImGui::GetBackgroundDrawList()->AddText(ImVec2(x, y - 10), Menu::Color::NameColor, Entity.name.c_str());
+			ImGui::GetBackgroundDrawList()->AddText(ImVec2(x, y - 18), Menu::Color::NameColor, Entity.name.c_str());
 			ImGui::PopFont();
 		}
 

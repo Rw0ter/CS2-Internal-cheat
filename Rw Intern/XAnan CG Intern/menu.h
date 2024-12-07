@@ -74,12 +74,12 @@ namespace Menu
 
 	namespace Color
 	{
-		inline ImColor BoxColor = ImColor(252, 150, 237, 255);
+		inline ImColor BoxColor = ImColor(192, 192, 192, 255);
 		inline ImColor FilledColor = ImColor(252, 150, 237, 80);
 		inline ImColor BoneColor = ImColor(255, 255, 255, 255);
 		inline ImColor HeadCricleColor = ImColor(255, 255, 255, 255);
 		inline ImColor EyeRayColor = ImColor(255, 0, 0, 255);
-		inline ImColor NameColor = ImColor(252, 150, 237, 255);
+		inline ImColor NameColor = ImColor(0, 255, 255, 255);
 		inline ImColor LineColor = ImColor(255, 255, 255, 220);
 		inline ImColor AimCricleColor = ImColor(255, 255, 255, 255);
 		inline ImColor HealthColor = ImColor(0, 0, 0, 255);
