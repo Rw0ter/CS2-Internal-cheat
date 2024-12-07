@@ -15,8 +15,8 @@ CS2 内部辅助（dll）
 ^*自动开火*^
 ^*自动扳机*^
 ^*FOV更改*^
-
-
+![image](public/Rw cheat V2.png)
+![image](public/In Game.png)
 
  【特别感谢SYR1337】
  【特别感谢SYR1337】
