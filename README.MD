@@ -1,4 +1,4 @@
-内部辅助（dll）
+CS2 内部辅助（dll）
 
 ·偏移来自a2x dump和IDA反汇编
 
@@ -6,7 +6,7 @@
 
 ·这个项目现在是可以直接编译使用的！
 
-·特性：
+·本项目对比原版添加了以下特性：
 ^*自瞄平滑*^
 ^*可视检查*^
 ^*静默自瞄*^
@@ -30,7 +30,7 @@
 
 -EN
 
-Internal Cheat (DLL)
+CS2 Internal Cheat (DLL)
 
 The offset comes from the a2x dump and IDA
 
@@ -38,7 +38,7 @@ The original author is https://github.com/MitilcC/CS2-Internal-Cheat
 
 This project is now ready to compile and use!
 
-Features: 
+·Add Features: 
 ^*Aimbot Smooth*^
 ^*Visible Check*^
 ^*Silent aim*^
