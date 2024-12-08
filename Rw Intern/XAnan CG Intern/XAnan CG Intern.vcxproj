@@ -149,6 +149,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Anti-aim.hpp" />
+    <ClInclude Include="Bhop.hpp" />
     <ClInclude Include="CCSGOInput.hpp" />
     <ClInclude Include="CUserCmd.h" />
     <ClInclude Include="GameTace.hpp" />
@@ -199,6 +201,8 @@
     <ClInclude Include="weaponcheak.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Anti-aim.cpp" />
+    <ClCompile Include="Bhop.cpp" />
     <ClCompile Include="GameTace.cpp" />
     <ClCompile Include="mem Aimbot.cpp" />
     <ClCompile Include="Bone.cpp" />

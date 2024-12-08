@@ -66,10 +66,15 @@ namespace Menu
 
 	}
 
+	namespace AntiAim
+	{
+		inline bool bEnable = { false };
+	}
+
 	namespace Misc
 	{
 		inline bool Rander = { true };
-
+		inline bool Bhop = { false };
 	}
 
 	namespace Color

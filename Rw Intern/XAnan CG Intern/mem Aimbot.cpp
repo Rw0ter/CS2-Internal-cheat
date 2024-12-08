@@ -210,14 +210,14 @@ bool Aimbot::GetBestTarget()
 
 
 			if (EyepTrace.IsVisible()) {
-				printf("现在锁头\n");
+				//printf("现在锁头\n");
 				TempAimPos = HeadPos;
 				AimPos = BoneIndex::head;
 				Target::addr = Entity.pawn;
 				bHasScanTarget = true;
 			}
 			else if (NeckpTrace.IsVisible() || Spine1pTrace.IsVisible() || Spine2pTrace.IsVisible() || PelvispTrace.IsVisible()) {
-				printf("现在锁躯干\n");
+				//printf("现在锁躯干\n");
 				Vector3 BonePositions[4] = {
 				  NeckPos,
 				  Spine1Pos,
@@ -250,7 +250,7 @@ bool Aimbot::GetBestTarget()
 				   ArmUpperRpTrace.IsVisible() || ArmLowerRpTrace.IsVisible() || handRpTrace.IsVisible() ||
 				   LegUpperLpTrace.IsVisible() || LegLowerLpTrace.IsVisible() || AnkleLpTrace.IsVisible() ||
 				    LegUpperRpTrace.IsVisible() || LegLowerRpTrace.IsVisible() || AnkleRpTrace.IsVisible()) {
-				     printf("现在锁四肢\n");
+				    // printf("现在锁四肢\n");
 				     Vector3 BonePositions[12] = {
 						 ArmUpperLPos,
 						ArmLowerLPos,
@@ -353,11 +353,6 @@ Vector3 Aimbot::GetTargetAngle(Vector3 pTargetPos)
 	return targetAngle;
 }
 
-void Aimbot::ReleaseMouseButton()
-{
-	std::this_thread::sleep_for(std::chrono::milliseconds(200));
-	mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
-}
 
 bool Aimbot::ShotTarget()
 {
@@ -390,6 +385,7 @@ bool Aimbot::ShotTarget()
 			pUserCmd->SetHistoryAngles(targetAngle);
 			CBaseUserCmd* pBaseCmd = pUserCmd->csgoUserCmd.pBaseCmd;
 			if (pBaseCmd && pBaseCmd->pViewAngles && !bPrefectSilent) {
+				printf("targetAngle Vec3  x: %f y : %f z : %f\n", targetAngle.x, targetAngle.y, targetAngle.z);
 				pBaseCmd->pViewAngles->m_view_angles = targetAngle;
 			}
 

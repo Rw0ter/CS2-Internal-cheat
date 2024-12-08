@@ -23,26 +23,26 @@ public:
 	std::string name;
 };
 
-enum BoneIndex
-{
-	head = 6,
-	neck_0 = 5,
-	spine_1 = 4,
-	spine_2 = 2,
-	pelvis = 0,
-	arm_upper_L = 8,
-	arm_lower_L = 9,
-	hand_L = 10,
-	arm_upper_R = 13,
-	arm_lower_R = 14,
-	hand_R = 15,
-	leg_upper_L = 22,
-	leg_lower_L = 23,
-	ankle_L = 24,
-	leg_upper_R = 25,
-	leg_lower_R = 26,
-	ankle_R = 27,
+enum BoneIndex {
+	head = 6,           // Í·²¿
+	neck_0 = 5,         // ¾±²¿
+	spine_1 = 4,        // ¼¹×µ1
+	spine_2 = 2,        // ¼¹×µ2
+	pelvis = 0,         // ¹ÇÅè
+	arm_upper_L = 8,    // ×óÉÏ±Û
+	arm_lower_L = 9,    // ×óÇ°±Û
+	hand_L = 10,        // ×óÊÖ
+	arm_upper_R = 13,   // ÓÒÉÏ±Û
+	arm_lower_R = 14,   // ÓÒÇ°±Û
+	hand_R = 15,        // ÓÒÊÖ
+	leg_upper_L = 22,   // ×ó´óÍÈ
+	leg_lower_L = 23,   // ×óĞ¡ÍÈ
+	ankle_L = 24,       // ×ó½Åõ×
+	leg_upper_R = 25,   // ÓÒ´óÍÈ
+	leg_lower_R = 26,   // ÓÒĞ¡ÍÈ
+	ankle_R = 27,       // ÓÒ½Åõ×
 };
+
 
 inline ImColor ImGlowColor;
 

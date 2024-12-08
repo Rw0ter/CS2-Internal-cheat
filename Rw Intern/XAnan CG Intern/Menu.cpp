@@ -49,7 +49,7 @@ void Menu::start()
 
 			ImGui::SetWindowFontScale(dpi_scale);
 			if (ImGui::Tab("H", "Aimbot", "Auto Aim Function", 0 == Gui::tabs, ImVec2(150 * dpi_scale, 42 * dpi_scale))) Gui::tabs = 0;
-			if (ImGui::Tab("G", "Changer", "Inventory & Profile", 1 == Gui::tabs, ImVec2(150 * dpi_scale, 42 * dpi_scale)))Gui::tabs = 1;
+			if (ImGui::Tab("G", "Antiaim", "Setting yaw & pitch", 1 == Gui::tabs, ImVec2(150 * dpi_scale, 42 * dpi_scale)))Gui::tabs = 1;
 			if (ImGui::Tab("F", "Visuals", "Show Player Esp", 2 == Gui::tabs, ImVec2(150 * dpi_scale, 42 * dpi_scale))) Gui::tabs = 2;
 			if (ImGui::Tab("E", "Misc", "Other settings", 3 == Gui::tabs, ImVec2(150 * dpi_scale, 42 * dpi_scale))) Gui::tabs = 3;
 			if (ImGui::Tab("B", "Config", "Manage your configs", 6 == Gui::tabs, ImVec2(150 * dpi_scale, 42 * dpi_scale))) Gui::tabs = 4;
@@ -115,21 +115,21 @@ void Menu::start()
 					ImGui::SliderFloat("Aim Smooth", &Menu::Aimbot::Smooth, SmoothMin, SmoothMax, "%.001f", ImGuiSliderFlags_None);
 					ImGui::SliderFloat("RCS Smooth", &Menu::Aimbot::flRecoilAmount, RecoilSmoothMin, RecoilSmoothMax, "%.001f", ImGuiSliderFlags_None);
 
-					if (ImGui::Combo("Hitbox", &Menu::Aimbot::AimShotPosComb, "Head\0Neck\0Spine"))
-					{
-						switch (Menu::Aimbot::AimShotPosComb)
-						{
-						case 0:
-							Menu::Aimbot::AimPos = BoneIndex::head;
-							break;
-						case 1:
-							Menu::Aimbot::AimPos = BoneIndex::neck_0;
-							break;
-						case 2:
-							Menu::Aimbot::AimPos = BoneIndex::spine_1;
-							break;
-						}
-					}
+					//if (ImGui::Combo("Hitbox", &Menu::Aimbot::AimShotPosComb, "Head\0Neck\0Spine"))
+					//{
+					//	switch (Menu::Aimbot::AimShotPosComb)
+					//	{
+					//	case 0:
+					//		Menu::Aimbot::AimPos = BoneIndex::head;
+					//		break;
+					//	case 1:
+					//		Menu::Aimbot::AimPos = BoneIndex::neck_0;
+					//		break;
+					//	case 2:
+					//		Menu::Aimbot::AimPos = BoneIndex::spine_1;
+					//		break;
+					//	}
+					//}
 
 					//int BulletMin = 0, BulletMax = 6;
 					//float RecoilMin = 0.f, RecoilMax = 2.f;
@@ -162,7 +162,7 @@ void Menu::start()
 
 					DWORD TriggerDelayMin = 0, TriggerDelayMax = 300;
 					ImGui::SliderInt("Shotdelay", &Menu::Tiggerbot::TriggerShotDelay, TriggerDelayMin, TriggerDelayMax, "%d", ImGuiSliderFlags_None);
-					ImGui::SliderInt("Toggle Target delay", &Menu::Tiggerbot::TriggerTargetDelay, TriggerDelayMin, TriggerDelayMax, "%d", ImGuiSliderFlags_None);
+					ImGui::SliderInt("Between Two Shoot delay", &Menu::Tiggerbot::TriggerTargetDelay, TriggerDelayMin, TriggerDelayMax, "%d", ImGuiSliderFlags_None);
 
 
 
@@ -175,10 +175,24 @@ void Menu::start()
 
 			}
 			      break;
-			//SkinChanger
+			//Anti-aim
 			case 1: 
 			{
-			
+				ImGui::BeginChildPos("", ImVec2(620 * dpi_scale, 100 * dpi_scale));
+				{
+					ImGui::GetForegroundDrawList()->AddText(tab_text3, 26 * dpi_scale, ImVec2(450 * dpi_scale + p.x, 55 * dpi_scale + p.y), ImColor(255, 255, 255, 255), "Anti-aim");
+					ImGui::GetForegroundDrawList()->AddText(tab_text3, 16 * dpi_scale, ImVec2(390 * dpi_scale + p.x, 85 * dpi_scale + p.y), ImColor(255, 255, 255, 255), "Hide head for aimbot");
+				}
+				ImGui::EndChild();
+				ImGui::SetCursorPosY(120 * dpi_scale);
+				ImGui::BeginChildPos("Antiaim", ImVec2(620 * dpi_scale, 580 * dpi_scale));
+				{
+					ImGui::SetWindowFontScale(dpi_scale);
+
+					ImGui::Checkbox("Enable", &Menu::AntiAim::bEnable);
+
+				}
+				ImGui::EndChild();
 			}
 			      break;
 			//Visual
@@ -264,8 +278,9 @@ void Menu::start()
 				{
 					ImGui::SetWindowFontScale(dpi_scale);
 
-					ImGui::Checkbox("RanderHack", &Menu::Misc::Rander);
+					ImGui::Checkbox("Rander", &Menu::Misc::Rander);
 
+					ImGui::Checkbox("Bhop", &Menu::Misc::Bhop);
 				}
 				ImGui::EndChild();
 			}

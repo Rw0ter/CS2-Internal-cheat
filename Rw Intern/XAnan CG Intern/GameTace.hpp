@@ -62,7 +62,6 @@ public:
     }
 
     bool IsVisible() const noexcept {
-        printf("flFraction: %f\n", flFraction);
         return this->flFraction > 0.9f;
     }
 };

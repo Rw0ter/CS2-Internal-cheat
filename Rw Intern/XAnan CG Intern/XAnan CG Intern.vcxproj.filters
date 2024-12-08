@@ -175,6 +175,12 @@
     <ClInclude Include="CCSGOInput.hpp">
       <Filter>sdk</Filter>
     </ClInclude>
+    <ClInclude Include="Bhop.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="Anti-aim.hpp">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="kiero\kiero.cpp">
@@ -258,6 +264,12 @@
     </ClCompile>
     <ClCompile Include="GameTace.cpp">
       <Filter>Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="Bhop.cpp">
+      <Filter>cheat\feature</Filter>
+    </ClCompile>
+    <ClCompile Include="Anti-aim.cpp">
+      <Filter>cheat\feature</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -12,6 +12,8 @@
 #include "GameState.h"
 #include "weaponcheak.hpp"
 #include "CCSGOInput.hpp"
+#include "Bhop.hpp"
+#include "Anti-aim.hpp"
 
 
 bool init = false;
@@ -97,7 +99,10 @@ static void(__fastcall* fnOriginalCreateMove)(void*, int, uint8_t) = nullptr;
 static void hkCreateMove(void* pCSGOInput, int nSlot, uint8_t bActive) {
 	fnOriginalCreateMove(pCSGOInput, nSlot, bActive);
 	if (GameState::IsMatchStarted()) {
+		Bhop();
+		if (Menu::AntiAim::bEnable) { Antiaim(); }
 		if (Menu::bAimBot && weaponcheck() == true) Aimbot::Start();
+
 	}
 }
 
@@ -106,14 +111,14 @@ static void __fastcall hkValidateInput(CCSGOInput* input, int a2) {
 	Vector3 angOriginalAngle = input->GetViewAngles();
 	fnOriginalValidateInput(input, a2);
 	input->SetViewAngles(angOriginalAngle);
-}
+} 
 
 
 DWORD WINAPI MainThread(LPVOID lpReserved)
 {
 
 	PatternScan patternScan{};
-	//Console::InitConsole();
+	Console::InitConsole();
 	if (patternScan.InitPointers())
 	{
 		void* pCCSGOInput = CCSGOInput::Get();
