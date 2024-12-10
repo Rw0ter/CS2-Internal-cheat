@@ -319,10 +319,10 @@ void Menu::start()
 						ImGui::ColorEdit4("LocalPlayer Chams Color##LocalPlayer Visible Color", reinterpret_cast<float*>(&Menu::Color::LocalPlayerVisibleColor), ImGuiColorEditFlags_NoInputs);
 
 						ImGui::ColorEdit4("Teammate Visible Color##Teammate Visible Color", reinterpret_cast<float*>(&Menu::Color::TeammateVisibleColor), ImGuiColorEditFlags_NoInputs);
-						ImGui::ColorEdit4("Teammate Visible Color##Teammate InVisible Color", reinterpret_cast<float*>(&Menu::Color::TeammateInVisibleColor), ImGuiColorEditFlags_NoInputs);
+						ImGui::ColorEdit4("Teammate InVisible Color##Teammate InVisible Color", reinterpret_cast<float*>(&Menu::Color::TeammateInVisibleColor), ImGuiColorEditFlags_NoInputs);
 
 						ImGui::ColorEdit4("Enemies Visible Color##Enemies Visible Color", reinterpret_cast<float*>(&Menu::Color::EnemiesVisibleColor), ImGuiColorEditFlags_NoInputs);
-						ImGui::ColorEdit4("Enemies Visible Color##Enemies InVisible Color", reinterpret_cast<float*>(&Menu::Color::EnemiesInVisibleColor), ImGuiColorEditFlags_NoInputs);
+						ImGui::ColorEdit4("Enemies InVisible Color##Enemies InVisible Color", reinterpret_cast<float*>(&Menu::Color::EnemiesInVisibleColor), ImGuiColorEditFlags_NoInputs);
 
 					}
 
