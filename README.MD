@@ -18,15 +18,15 @@ CS2 内部辅助（dll）
 ^*FOV更改*^
 
 
-![image]()
-![image]()
+![image](https://github.com/Rw0ter/CS2-Internal-cheat/blob/9e9284e44bfd6f86b4ffe8effae2b48ba32fa198/Rw%20cheat%20V2%20Aimbot.png)
+![image](https://github.com/Rw0ter/CS2-Internal-cheat/blob/9e9284e44bfd6f86b4ffe8effae2b48ba32fa198/Rw%20cheat%20V2%20Chams.png)
+![image](https://github.com/Rw0ter/CS2-Internal-cheat/blob/9e9284e44bfd6f86b4ffe8effae2b48ba32fa198/Rw%20cheat%20V2%20Misc.png)
+![image](https://github.com/Rw0ter/CS2-Internal-cheat/blob/9e9284e44bfd6f86b4ffe8effae2b48ba32fa198/Rw%20cheat%20V2%20Antiaim.png)
+
 
  【特别感谢SYR1337】
  【特别感谢SYR1337】
  【特别感谢SYR1337】
-
-
-·编译时请选择Release，否则你会收到两个报错
 
 
 ·搬运请注明出处！
@@ -57,7 +57,5 @@ This project is now ready to compile and use!
 【Thanks SYR1337】 
 【Thanks SYR1337】
 
-
-·Please select "Release" during compilation, otherwise you will receive two error messages.
 
 Please indicate the source for handling!
