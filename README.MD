@@ -1,3 +1,5 @@
+![image](https://github.com/Rw0ter/CS2-Internal-cheat/blob/4dfd9244f8163d47c112a96be88b41ef4d50bfaf/In%20Game.png)
+
 CS2 内部辅助（dll）
 
 ·偏移来自a2x dump和IDA
