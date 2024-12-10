@@ -18,8 +18,8 @@ CS2 内部辅助（dll）
 ^*FOV更改*^
 
 
-![image](https://github.com/Rw0ter/CS2-Internal-cheat/blob/main/Rw%20cheat%20V2.png)
-![image](https://github.com/Rw0ter/CS2-Internal-cheat/blob/main/In%20Game.png)
+![image]()
+![image]()
 
  【特别感谢SYR1337】
  【特别感谢SYR1337】
