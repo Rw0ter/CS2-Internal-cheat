@@ -140,6 +140,14 @@ public:
 	{
 		return rep_ != nullptr;
 	}
+
+	T* add(T* element)
+	{
+
+		static uint8_t* add_to_rep_addr = Memory::Absolute(Memory::FindPattern("client.dll", "E8 ? ? ? ? 4C 8B E0 48 8B 44 24 ? 4C 8B CF"), 0x1, 0);
+
+		return reinterpret_cast<T * (__fastcall*)(c_repeated_ptr_field*, T*)>(add_to_rep_addr)(this, element);
+	}
 };
 
 struct CSubtickMove : CBasePB {
@@ -180,6 +188,39 @@ public:
 		if (!pViewAngles) return;
 		pViewAngles->m_view_angles = angle;
 		pViewAngles->AddFlag(7);
+	}
+
+	bool IsMovement() {
+		return (this->flSideMove + this->flForwardMove) != 0.f;
+	}
+
+	void StopMovement() {
+		this->flSideMove = 0.f;
+		this->flForwardMove = 0.f;
+	}
+
+	CSubtickMove* create_new_subtick_move_step() {
+		using fn = CSubtickMove*(__fastcall*)(void*);
+		static fn fnCreateSubTickMove = reinterpret_cast<fn>(Memory::Absolute(Memory::FindPattern("client.dll", "E8 ? ? ? ? 48 8B D0 48 8D 4F ? E8 ? ? ? ? 48 8B D0"), 1, 0));
+		if (!fnCreateSubTickMove) {
+			return nullptr;
+		}
+
+		return fnCreateSubTickMove(subtickMovesField.m_pArena);
+	}
+
+	CSubtickMove* add_subtick_move_step() {
+		if (subtickMovesField.rep_ && subtickMovesField.m_nCurrentSize < subtickMovesField.m_nTotalSize) {
+			return subtickMovesField[subtickMovesField.m_nCurrentSize++];
+		}
+
+		CSubtickMove* pMoveStep = create_new_subtick_move_step();
+		if (!pMoveStep) {
+			return nullptr;
+		}
+
+		subtickMovesField.add(pMoveStep);
+		return pMoveStep;
 	}
 };
 

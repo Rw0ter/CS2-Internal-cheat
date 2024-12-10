@@ -20,8 +20,8 @@ bool Cheat::Run()
 	}
 	if (GameState::IsMatchStarted())
 	{
-		Aimbot::Tiggerbot();
-		Aimbot::AutoFire();
+		// Aimbot::Tiggerbot();
+		// Aimbot::AutoFire();
 		if (Menu::bESP) ESP::Start();
 	}
 

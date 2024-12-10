@@ -119,6 +119,7 @@
       <PrecompiledHeaderFile>
       </PrecompiledHeaderFile>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <AdditionalIncludeDirectories>imgui;kiero;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -149,11 +150,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Anti-aim.hpp" />
     <ClInclude Include="Bhop.hpp" />
+    <ClInclude Include="Bit Flags.hpp" />
     <ClInclude Include="CCSGOInput.hpp" />
+    <ClInclude Include="CKeyValues3.hpp" />
+    <ClInclude Include="CMaterial2.hpp" />
+    <ClInclude Include="color.hpp" />
+    <ClInclude Include="CSceneAnimatableObjectDest.hpp" />
     <ClInclude Include="CUserCmd.h" />
+    <ClInclude Include="CViewSetup.hpp" />
+    <ClInclude Include="fnv1a.h" />
     <ClInclude Include="GameTace.hpp" />
+    <ClInclude Include="IEngineCvar.hpp" />
+    <ClInclude Include="IGameResourceService.hpp" />
+    <ClInclude Include="IMaterialSystem2.hpp" />
+    <ClInclude Include="IMemAlloc.hpp" />
+    <ClInclude Include="matrix.hpp" />
     <ClInclude Include="mem Aimbot.h" />
     <ClInclude Include="Bone.h" />
     <ClInclude Include="Cheat.h" />
@@ -195,15 +207,19 @@
     <ClInclude Include="Search.h" />
     <ClInclude Include="Tace Memory.hpp" />
     <ClInclude Include="Ults.h" />
+    <ClInclude Include="UtlLinkedList.h" />
     <ClInclude Include="UtlMemory.h" />
+    <ClInclude Include="UtlStrongHandle.h" />
     <ClInclude Include="UtlVector.h" />
     <ClInclude Include="Vector.h" />
     <ClInclude Include="weaponcheak.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Anti-aim.cpp" />
     <ClCompile Include="Bhop.cpp" />
+    <ClCompile Include="CKeyValues3.cpp" />
+    <ClCompile Include="color.cpp" />
     <ClCompile Include="GameTace.cpp" />
+    <ClCompile Include="IMaterialSystem2.cpp" />
     <ClCompile Include="mem Aimbot.cpp" />
     <ClCompile Include="Bone.cpp" />
     <ClCompile Include="Cheat.cpp" />

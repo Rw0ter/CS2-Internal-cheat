@@ -178,8 +178,47 @@
     <ClInclude Include="Bhop.hpp">
       <Filter>include</Filter>
     </ClInclude>
-    <ClInclude Include="Anti-aim.hpp">
+    <ClInclude Include="Bit Flags.hpp">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="IEngineCvar.hpp">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="UtlLinkedList.h">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="fnv1a.h">
       <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="CViewSetup.hpp">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="CSceneAnimatableObjectDest.hpp">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="matrix.hpp">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="color.hpp">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="UtlStrongHandle.h">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="CMaterial2.hpp">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="IGameResourceService.hpp">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="IMaterialSystem2.hpp">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="CKeyValues3.hpp">
+      <Filter>sdk</Filter>
+    </ClInclude>
+    <ClInclude Include="IMemAlloc.hpp">
+      <Filter>sdk</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -268,8 +307,14 @@
     <ClCompile Include="Bhop.cpp">
       <Filter>cheat\feature</Filter>
     </ClCompile>
-    <ClCompile Include="Anti-aim.cpp">
-      <Filter>cheat\feature</Filter>
+    <ClCompile Include="color.cpp">
+      <Filter>sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="IMaterialSystem2.cpp">
+      <Filter>sdk</Filter>
+    </ClCompile>
+    <ClCompile Include="CKeyValues3.cpp">
+      <Filter>sdk</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

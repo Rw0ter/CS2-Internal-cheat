@@ -42,14 +42,14 @@ void Menu::start()
 		ImGui::PushStyleColor(ImGuiCol_ChildBg, ImVec4(0, 0, 0, 0));
 		ImGui::BeginChild("G-Tab", ImVec2(173 * dpi_scale, 790 * dpi_scale), false);
 		{
-			ImGui::GetForegroundDrawList()->AddText(tab_text3, 35 * dpi_scale, ImVec2(16 * dpi_scale + p.x, 12 * dpi_scale + p.y), ImColor(255, 255, 255, 255), "Rwater CS2");
+			ImGui::GetForegroundDrawList()->AddText(tab_text3, 35 * dpi_scale, ImVec2(16 * dpi_scale + p.x, 12 * dpi_scale + p.y), ImColor(255, 255, 255, 255), "RaweTrip");
 			ImGui::GetWindowDrawList()->AddRectFilled(ImVec2(0 + p.x, 0 + p.y), ImVec2(273 * dpi_scale + p.x, 790 * dpi_scale + p.y), ImGui::GetColorU32(colors::Tab_Child), s.WindowRounding);
 
 			ImGui::SetCursorPosY(60);
 
 			ImGui::SetWindowFontScale(dpi_scale);
 			if (ImGui::Tab("H", "Aimbot", "Auto Aim Function", 0 == Gui::tabs, ImVec2(150 * dpi_scale, 42 * dpi_scale))) Gui::tabs = 0;
-			if (ImGui::Tab("G", "Antiaim", "Setting yaw & pitch", 1 == Gui::tabs, ImVec2(150 * dpi_scale, 42 * dpi_scale)))Gui::tabs = 1;
+			if (ImGui::Tab("G", "Anti-aim", "change Yaw & Pitch", 1 == Gui::tabs, ImVec2(150 * dpi_scale, 42 * dpi_scale)))Gui::tabs = 1;
 			if (ImGui::Tab("F", "Visuals", "Show Player Esp", 2 == Gui::tabs, ImVec2(150 * dpi_scale, 42 * dpi_scale))) Gui::tabs = 2;
 			if (ImGui::Tab("E", "Misc", "Other settings", 3 == Gui::tabs, ImVec2(150 * dpi_scale, 42 * dpi_scale))) Gui::tabs = 3;
 			if (ImGui::Tab("B", "Config", "Manage your configs", 6 == Gui::tabs, ImVec2(150 * dpi_scale, 42 * dpi_scale))) Gui::tabs = 4;
@@ -67,7 +67,7 @@ void Menu::start()
 
 
 		ImGui::GetForegroundDrawList()->AddText(tab_text3, 16 * dpi_scale, ImVec2(10 * dpi_scale + p.x, 765 * dpi_scale + p.y), ImColor(255, 255, 255, 255), "Rwater.net");
-		ImGui::GetForegroundDrawList()->AddText(tab_text3, 16 * dpi_scale, ImVec2(790 * dpi_scale + p.x, 765 * dpi_scale + p.y), ImColor(255, 255, 255, 255), "V2 Alpha");
+		ImGui::GetForegroundDrawList()->AddText(tab_text3, 16 * dpi_scale, ImVec2(790 * dpi_scale + p.x, 765 * dpi_scale + p.y), ImColor(255, 255, 255, 255), "V2 Nightly");
 		Gui::tab_alpha = ImClamp(Gui::tab_alpha + (7.f * ImGui::GetIO().DeltaTime * (Gui::tabs == Gui::active_tab ? 1.f : -1.f)), 0.f, 1.f);
 		Gui::tab_add = ImClamp(Gui::tab_add + (std::round(50.f) * ImGui::GetIO().DeltaTime * (Gui::tabs == Gui::active_tab ? 1.f : -1.f)), 0.f, 1.f);
 
@@ -98,10 +98,12 @@ void Menu::start()
 				ImGui::BeginChildPos("AimBot", ImVec2(300 * dpi_scale, 580 * dpi_scale));
 				{
 					ImGui::SetWindowFontScale(dpi_scale);
+					if (!Menu::SafeMode) { ImGui::Checkbox("Rage Mode", &Menu::Aimbot::AimbotAlwaysOn); }
+					else { Menu::Aimbot::AimbotAlwaysOn = false; }
+					
 					ImGui::Checkbox("mem AimBot", &Menu::bAimBot);
 					ImGui::Checkbox("Slient AimBot", &Menu::Aimbot::bSilent);
 					ImGui::Checkbox("PSlient AimBot", &Menu::Aimbot::bPrefectSilent);
-					ImGui::Checkbox("Always on", &Menu::Aimbot::AimbotAlwaysOn);
 					ImGui::Checkbox("Visible Check", &Menu::Aimbot::bVisibleCheck);
 					ImGui::Checkbox("AutoRecoil", &Menu::Aimbot::bAutoRecoil);
 					ImGui::Keybind("Aim Bind", &Menu::Aimbot::AimKey, true);
@@ -112,9 +114,9 @@ void Menu::start()
 					float RecoilSmoothMin = 0.000f, RecoilSmoothMax = 1.000f;
 					float SmoothMin = 0.000f, SmoothMax = 100.000f;
 					ImGui::SliderInt("Aim Fov", &Menu::Aimbot::AimSize, FovMin, FovMax, "%d", ImGuiSliderFlags_None);
+					if (Menu::SafeMode) { SmoothMin = 50.000f; }
 					ImGui::SliderFloat("Aim Smooth", &Menu::Aimbot::Smooth, SmoothMin, SmoothMax, "%.001f", ImGuiSliderFlags_None);
 					ImGui::SliderFloat("RCS Smooth", &Menu::Aimbot::flRecoilAmount, RecoilSmoothMin, RecoilSmoothMax, "%.001f", ImGuiSliderFlags_None);
-
 					//if (ImGui::Combo("Hitbox", &Menu::Aimbot::AimShotPosComb, "Head\0Neck\0Spine"))
 					//{
 					//	switch (Menu::Aimbot::AimShotPosComb)
@@ -147,7 +149,6 @@ void Menu::start()
 				{
 
 					ImGui::SetWindowFontScale(dpi_scale);
-					ImGui::Checkbox("Auto Fire", &Menu::Tiggerbot::AutoFire);
 					ImGui::Checkbox("TriggerBot", &Menu::Tiggerbot::TriggerBot);
 					ImGui::Keybind("Trigger Key", &Menu::Tiggerbot::HotKey, true);
 					//if (ImGui::Combo("TriggerMode", &MenuConfig::TriggerMode, "Hold\0Toggle"))
@@ -160,11 +161,9 @@ void Menu::start()
 					//ImGui::Checkbox("FovCircle", &MenuConfig::ShowAimFovRange);
 
 
-					DWORD TriggerDelayMin = 0, TriggerDelayMax = 300;
-					ImGui::SliderInt("Shotdelay", &Menu::Tiggerbot::TriggerShotDelay, TriggerDelayMin, TriggerDelayMax, "%d", ImGuiSliderFlags_None);
-					ImGui::SliderInt("Between Two Shoot delay", &Menu::Tiggerbot::TriggerTargetDelay, TriggerDelayMin, TriggerDelayMax, "%d", ImGuiSliderFlags_None);
-
-
+					float TriggerDelayMin = 0.000f, TriggerDelayMax = 1.000f;
+					//ImGui::SliderInt("Shotdelay", &Menu::Tiggerbot::TriggerShotDelay, TriggerDelayMin, TriggerDelayMax, "%d", ImGuiSliderFlags_None);
+					ImGui::SliderFloat("Between Two Shoot delay", &Menu::Tiggerbot::TriggerTargetDelay, TriggerDelayMin, TriggerDelayMax, "%f", ImGuiSliderFlags_None);
 
 
 
@@ -175,21 +174,43 @@ void Menu::start()
 
 			}
 			      break;
-			//Anti-aim
+			//Anit-aim
 			case 1: 
 			{
 				ImGui::BeginChildPos("", ImVec2(620 * dpi_scale, 100 * dpi_scale));
 				{
-					ImGui::GetForegroundDrawList()->AddText(tab_text3, 26 * dpi_scale, ImVec2(450 * dpi_scale + p.x, 55 * dpi_scale + p.y), ImColor(255, 255, 255, 255), "Anti-aim");
-					ImGui::GetForegroundDrawList()->AddText(tab_text3, 16 * dpi_scale, ImVec2(390 * dpi_scale + p.x, 85 * dpi_scale + p.y), ImColor(255, 255, 255, 255), "Hide head for aimbot");
+					ImGui::GetForegroundDrawList()->AddText(tab_text3, 26 * dpi_scale, ImVec2(475 * dpi_scale + p.x, 55 * dpi_scale + p.y), ImColor(255, 255, 255, 255), "Anit-aim");
+					ImGui::GetForegroundDrawList()->AddText(tab_text3, 16 * dpi_scale, ImVec2(425 * dpi_scale + p.x, 85 * dpi_scale + p.y), ImColor(255, 255, 255, 255), "Help you hide body to aimbot");
 				}
 				ImGui::EndChild();
 				ImGui::SetCursorPosY(120 * dpi_scale);
-				ImGui::BeginChildPos("Antiaim", ImVec2(620 * dpi_scale, 580 * dpi_scale));
+				ImGui::BeginChildPos("Main", ImVec2(300 * dpi_scale, 580 * dpi_scale));
+				{
+					ImGui::Checkbox("Enable Anti aim", &Menu::Antiaim::bEnable);
+
+					ImGui::Checkbox("spin bot", &Menu::Antiaim::Spinbot);
+
+
+
+				}
+				ImGui::EndChild();
+				ImGui::SetCursorPos(ImVec2(320 * dpi_scale, 120 * dpi_scale));
+				ImGui::BeginChildPos("Other", ImVec2(300 * dpi_scale, 580 * dpi_scale));
 				{
 					ImGui::SetWindowFontScale(dpi_scale);
 
-					ImGui::Checkbox("Enable", &Menu::AntiAim::bEnable);
+					float Minyawoffset = -180.f, Maxyawoffset = 180.f;
+					ImGui::SliderFloat("yaw offset", &Menu::Antiaim::YawOffset, Minyawoffset, Maxyawoffset, "%f", ImGuiSliderFlags_None);
+					
+					float MinPitchoffset = -89.f, MaxPitchoffset = 89.f;
+					ImGui::SliderFloat("Pitch offset", &Menu::Antiaim::PitchOffset, MinPitchoffset, MaxPitchoffset, "%f", ImGuiSliderFlags_None);
+
+					float MinSpeed = 0.f, MaxSpeed = 180.f;
+					ImGui::SliderFloat("Spin Speed", &Menu::Antiaim::Spinspeed, Minyawoffset, Maxyawoffset, "%f", ImGuiSliderFlags_None);
+
+
+
+
 
 				}
 				ImGui::EndChild();
@@ -208,36 +229,65 @@ void Menu::start()
 				{
 					ImGui::SetWindowFontScale(dpi_scale);
 
-					ImGui::Checkbox("Show Team ESP", &Menu::ESP::Team);
+					ImGui::Combo("ESP & Chams Main", &Menu::ESP::bChoose, "ESP\0Chams");
 
-					ImGui::Checkbox("Box", &Menu::ESP::Box);
+					switch (Menu::ESP::bChoose)
+					{
+					case 0:
+						ImGui::Checkbox("Show Team ESP", &Menu::ESP::Team);
 
-					ImGui::Combo("BoxType", &Menu::ESP::BoxType, "Rect\0Filled");
+						ImGui::Checkbox("Box", &Menu::ESP::Box);
 
-					ImGui::Checkbox("HealthBar", &Menu::ESP::Health);
+						ImGui::Combo("BoxType", &Menu::ESP::BoxType, "Rect\0Filled");
 
-					ImGui::Checkbox("Bone", &Menu::ESP::Bone);
+						ImGui::Checkbox("HealthBar", &Menu::ESP::Health);
 
-					ImGui::Checkbox("HeadCricle", &Menu::ESP::HeadCricle);
+						ImGui::Checkbox("Bone", &Menu::ESP::Bone);
 
-					ImGui::Checkbox("Name", &Menu::ESP::Name);
+						ImGui::Checkbox("HeadCricle", &Menu::ESP::HeadCricle);
 
-					ImGui::Checkbox("LineToEnemy", &Menu::ESP::Line);
+						ImGui::Checkbox("Name", &Menu::ESP::Name);
 
-					ImGui::Checkbox("Weapon", &Menu::ESP::Weapon);
+						ImGui::Checkbox("LineToEnemy", &Menu::ESP::Line);
 
-					ImGui::Combo("LineType", &Menu::ESP::LineType, "Button\0Top");
+						ImGui::Checkbox("Weapon", &Menu::ESP::Weapon);
 
-					ImGui::Checkbox("AimCricle", &Menu::ESP::AimCricle);
+						ImGui::Combo("LineType", &Menu::ESP::LineType, "Button\0Top");
 
-					ImGui::Combo("CricleType", &Menu::ESP::CricleType, "Emerey\0Screen");
+						ImGui::Combo("CricleType", &Menu::ESP::CricleType, "Emerey\0Screen");
 
-					ImGui::Checkbox("Glow", &Menu::ESP::Glow);
+						ImGui::Checkbox("Glow", &Menu::ESP::Glow);
 
-					ImGui::Checkbox("FOV Change", &Menu::ESP::FOV);
+						break;
+					case 1:
 
-					int FovMin = 1, FovMax = 180;
-					ImGui::SliderInt("Aim Fov", &Menu::ESP::FOVnumber, FovMin, FovMax, "%d", ImGuiSliderFlags_None);
+						ImGui::BulletText("LocalPlayer Chams");
+
+						ImGui::Checkbox("Enable", &Menu::ESP::bLocalPlayerChams);
+						ImGui::Combo("LocalPlayer Chams", &Menu::ESP::LocalPlayerChams, " flat\0regular\0latex\0glass\0bloom\0glow\0orderless");
+
+
+
+						ImGui::BulletText("Teammate Chams");
+
+						ImGui::Checkbox("Enable Teammate Visible", &Menu::ESP::bTeammateVisibleChams);
+						ImGui::Checkbox("Enable Teammate InVisible", &Menu::ESP::bTeammateInVisibleChams);
+						ImGui::Combo("Teammate Visible", &Menu::ESP::TeammateVisibleChams, " flat\0regular\0latex\0glass\0bloom\0glow\0orderless");
+						ImGui::Combo("Teammate INVisible", &Menu::ESP::TeammateInVisibleChams, " flat\0regular\0latex\0glass\0bloom\0glow\0orderless");
+
+						ImGui::BulletText("Enemies Chams");
+
+						ImGui::Checkbox("Enable Enemies Visible", &Menu::ESP::bEnemiesVisibleChams);
+						ImGui::Checkbox("Enable Enemies InVisible", &Menu::ESP::bEnemiesInVisibleChams);
+						ImGui::Combo("Enemies Visible", &Menu::ESP::EnemiesVisibleChams, " flat\0regular\0latex\0glass\0bloom\0glow\0orderless");
+						ImGui::Combo("Enemies INVisible", &Menu::ESP::EnemiesInVisibleChams, " flat\0regular\0latex\0glass\0bloom\0glow\0orderless");
+
+						break;
+					}
+
+
+
+
 
 				}
 				ImGui::EndChild();
@@ -246,28 +296,47 @@ void Menu::start()
 				{
 					ImGui::SetWindowFontScale(dpi_scale);
 
-					if(Menu::ESP::BoxType == 0)
-						ImGui::ColorEdit4("Box Color##BoxColor", reinterpret_cast<float*>(&Menu::Color::BoxColor), ImGuiColorEditFlags_NoInputs);
-					else
-						ImGui::ColorEdit4("Filled Color##FilledColor", reinterpret_cast<float*>(&Menu::Color::FilledColor), ImGuiColorEditFlags_NoInputs);
+					if(Menu::ESP::bChoose == 0){
+					
+						if (Menu::ESP::BoxType == 0)
+							ImGui::ColorEdit4("Box Color##BoxColor", reinterpret_cast<float*>(&Menu::Color::BoxColor), ImGuiColorEditFlags_NoInputs);
+						else
+							ImGui::ColorEdit4("Filled Color##FilledColor", reinterpret_cast<float*>(&Menu::Color::FilledColor), ImGuiColorEditFlags_NoInputs);
 
-					ImGui::ColorEdit4("Bone Color##BoneColor", reinterpret_cast<float*>(&Menu::Color::BoneColor), ImGuiColorEditFlags_NoInputs);
-					ImGui::ColorEdit4("HeadCricle Color##HeadCricleColor", reinterpret_cast<float*>(&Menu::Color::HeadCricleColor), ImGuiColorEditFlags_NoInputs);
-					ImGui::ColorEdit4("Eye Ray Color##EyeRay", reinterpret_cast<float*>(&Menu::Color::EyeRayColor), ImGuiColorEditFlags_NoInputs);
-					ImGui::ColorEdit4("Name Color Color##Name", reinterpret_cast<float*>(&Menu::Color::NameColor), ImGuiColorEditFlags_NoInputs);
-					ImGui::ColorEdit4("Line to enemy Color##LineToEnemyColor", reinterpret_cast<float*>(&Menu::Color::LineColor), ImGuiColorEditFlags_NoInputs);
-					ImGui::ColorEdit4("Weapon Color##WeaponColor", reinterpret_cast<float*>(&Menu::Color::WeaponColor), ImGuiColorEditFlags_NoInputs);
-					ImGui::ColorEdit4("AimCricle Color##AimCricle", reinterpret_cast<float*>(&Menu::Color::AimCricleColor), ImGuiColorEditFlags_NoInputs);
-					ImGui::ColorEdit4("Health Color##Health", reinterpret_cast<float*>(&Menu::Color::HealthColor), ImGuiColorEditFlags_NoInputs);
-					ImGui::ColorEdit4("Glow Color##Glow", reinterpret_cast<float*>(&ImGlowColor), ImGuiColorEditFlags_NoInputs);
+						ImGui::ColorEdit4("Bone Color##BoneColor", reinterpret_cast<float*>(&Menu::Color::BoneColor), ImGuiColorEditFlags_NoInputs);
+						ImGui::ColorEdit4("HeadCricle Color##HeadCricleColor", reinterpret_cast<float*>(&Menu::Color::HeadCricleColor), ImGuiColorEditFlags_NoInputs);
+						ImGui::ColorEdit4("Eye Ray Color##EyeRay", reinterpret_cast<float*>(&Menu::Color::EyeRayColor), ImGuiColorEditFlags_NoInputs);
+						ImGui::ColorEdit4("Name Color Color##Name", reinterpret_cast<float*>(&Menu::Color::NameColor), ImGuiColorEditFlags_NoInputs);
+						ImGui::ColorEdit4("Line to enemy Color##LineToEnemyColor", reinterpret_cast<float*>(&Menu::Color::LineColor), ImGuiColorEditFlags_NoInputs);
+						ImGui::ColorEdit4("Weapon Color##WeaponColor", reinterpret_cast<float*>(&Menu::Color::WeaponColor), ImGuiColorEditFlags_NoInputs);
+						ImGui::ColorEdit4("AimCricle Color##AimCricle", reinterpret_cast<float*>(&Menu::Color::AimCricleColor), ImGuiColorEditFlags_NoInputs);
+						ImGui::ColorEdit4("Health Color##Health", reinterpret_cast<float*>(&Menu::Color::HealthColor), ImGuiColorEditFlags_NoInputs);
+						ImGui::ColorEdit4("Glow Color##Glow", reinterpret_cast<float*>(&ImGlowColor), ImGuiColorEditFlags_NoInputs);
 
+					}
+					else {
+
+						ImGui::ColorEdit4("LocalPlayer Chams Color##LocalPlayer Visible Color", reinterpret_cast<float*>(&Menu::Color::LocalPlayerVisibleColor), ImGuiColorEditFlags_NoInputs);
+
+						ImGui::ColorEdit4("Teammate Visible Color##Teammate Visible Color", reinterpret_cast<float*>(&Menu::Color::TeammateVisibleColor), ImGuiColorEditFlags_NoInputs);
+						ImGui::ColorEdit4("Teammate Visible Color##Teammate InVisible Color", reinterpret_cast<float*>(&Menu::Color::TeammateInVisibleColor), ImGuiColorEditFlags_NoInputs);
+
+						ImGui::ColorEdit4("Enemies Visible Color##Enemies Visible Color", reinterpret_cast<float*>(&Menu::Color::EnemiesVisibleColor), ImGuiColorEditFlags_NoInputs);
+						ImGui::ColorEdit4("Enemies Visible Color##Enemies InVisible Color", reinterpret_cast<float*>(&Menu::Color::EnemiesInVisibleColor), ImGuiColorEditFlags_NoInputs);
+
+					}
+
+				
+
+
+			
 				}
 				ImGui::EndChild();
 			}
 				  break;
 			//Misc
 			case 3: {
-				ImGui::BeginChildPos("", ImVec2(620 * dpi_scale, 100 * dpi_scale));
+				ImGui::BeginChildPos("Misc Title", ImVec2(620 * dpi_scale, 100 * dpi_scale));
 				{
 					ImGui::GetForegroundDrawList()->AddText(tab_text3, 26 * dpi_scale, ImVec2(450 * dpi_scale + p.x, 55 * dpi_scale + p.y), ImColor(255, 255, 255, 255), "Miscellaneous");
 					ImGui::GetForegroundDrawList()->AddText(tab_text3, 16 * dpi_scale, ImVec2(390 * dpi_scale + p.x, 85 * dpi_scale + p.y), ImColor(255, 255, 255, 255), "Modify menu games and other functions");
@@ -278,11 +347,36 @@ void Menu::start()
 				{
 					ImGui::SetWindowFontScale(dpi_scale);
 
+					ImGui::Checkbox("Safe Mode", &Menu::SafeMode);
+					ImGui::BulletText("Will be disabled Insecure features on Valve server");
+
+
 					ImGui::Checkbox("Rander", &Menu::Misc::Rander);
+					ImGui::Checkbox(" Stand alone QuickStop", &Menu::Misc::bStandaloneQuickStop);
+
+
+					ImGui::Checkbox("Thirdperson", &Menu::Misc::Thirdperson);
+					ImGui::Keybind("Thirdperson Bind", &Menu::Misc::ThirdpersonKey, true);
+					float MinflThirdpersonDistance = 50.f, MaxflThirdpersonDistance = 180.f;
+					ImGui::SliderFloat("Thirdperson Distance", &Menu::Misc::flThirdpersonDistance, MinflThirdpersonDistance, MaxflThirdpersonDistance, "%f", ImGuiSliderFlags_None);
+
+
 
 					ImGui::Checkbox("Bhop", &Menu::Misc::Bhop);
+
+					ImGui::Checkbox("AutoStrafe", &Menu::Misc::AutoStrafe);
+
+					float MinflAutoStrafeSmoothing = 0.f, MaxflAutoStrafeSmoothing = 100.f;
+					ImGui::SliderFloat("Smooth", &Menu::Misc::flAutoStrafeSmoothing, MinflAutoStrafeSmoothing, MaxflAutoStrafeSmoothing, "%f", ImGuiSliderFlags_None);
+
+					ImGui::Checkbox("AutoStrafe when ViewAngles change", &Menu::Misc::bAutoStrafeViewAngles);
+
+					ImGui::Checkbox("AutoStrafe when MovementKeys", &Menu::Misc::bAutoStrafeMovementKeys);
+
+
 				}
 				ImGui::EndChild();
+
 			}
 			      break;
 			//Comfig

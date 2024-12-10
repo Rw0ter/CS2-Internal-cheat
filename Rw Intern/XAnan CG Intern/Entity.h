@@ -43,6 +43,22 @@ enum BoneIndex {
 	ankle_R = 27,       // ÓÒ½Åõ×
 };
 
+class CSchemaClassInfoData {
+    char pad[0x8];
+public:
+    const char* szName;
+    const char* szModule;
+    int32_t nSize;
+    int16_t nFieldSize;
+    int16_t nStaticSize;
+    int16_t nMetadataSize;
+    uint8_t nBaseClassesCount;
+    char pad2[0x4];
+    void* pFields;
+    char pad3[0x8];
+    void* pBaseClasses;
+    char pad4[0x28];
+};
 
 inline ImColor ImGlowColor;
 
@@ -51,6 +67,7 @@ int ConvertImColorToInt(const ImColor& color);
 namespace Get
 {
 	intptr_t PlayerPawnAddress(intptr_t addr);
+	bool IsPlayer(intptr_t addr);
 	bool PawnAlive(intptr_t addr);
 	bool PlayerAlive(intptr_t addr);
 	int PlayerTeam(intptr_t addr);
@@ -63,6 +80,11 @@ namespace Get
 	Vector3 LastCameraPos(intptr_t addr);
 	std::string GetWeaponName(intptr_t addr);
 	CUtlVector<Vector3>& GetAimPunch(intptr_t addr);
+	inline CSchemaClassInfoData* GetSchemaBinding(intptr_t addr) {
+		CSchemaClassInfoData* pBuffer = {};
+		Memory::CallClassFn<void, 38>((void*)addr, &pBuffer);
+		return pBuffer;
+	}
 }
 
 namespace Set

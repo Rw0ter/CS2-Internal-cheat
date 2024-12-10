@@ -7,7 +7,7 @@ CEngineTrace::CEngineTrace() noexcept {
 	bValid = pTraceManager != nullptr && pfnTraceShape != nullptr && pfnCreateFilter != nullptr;
 }
 
-CGameTrace CEngineTrace::TraceShape(Vector3& vecStart, Vector3& vecEnd, CBaseEntity* pSkipEntity) {
+CGameTrace CEngineTrace::TraceShape(Vector3& vecStart, Vector3& vecEnd, CBaseEntity* pSkipEntity, const uint64_t nMask) {
 	if (!bValid) {
 		return {};
 	}
@@ -15,7 +15,7 @@ CGameTrace CEngineTrace::TraceShape(Vector3& vecStart, Vector3& vecEnd, CBaseEnt
 	CTraceRay pTraceRay = {};
 	CTraceFilter pFilter = {};
 	CGameTrace pGameTrace = {};
-	pfnCreateFilter(&pFilter, pSkipEntity, 0x1C3003, 4, 7);
+	pfnCreateFilter(&pFilter, pSkipEntity, nMask, 4, 7);
 	pfnTraceShape(pTraceManager, &pTraceRay, &vecStart, &vecEnd, &pFilter, &pGameTrace);
 	return pGameTrace;
 }

@@ -82,5 +82,5 @@ public:
         return pEngineTrace;
     }
 
-    CGameTrace TraceShape(Vector3& vecStart, Vector3& vecEnd, CBaseEntity* pSkipEntity);
+    CGameTrace TraceShape(Vector3& vecStart, Vector3& vecEnd, CBaseEntity* pSkipEntity = nullptr, const uint64_t nMask = 0x1C3003);
 };

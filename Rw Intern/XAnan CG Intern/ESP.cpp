@@ -58,7 +58,7 @@ bool ESP::Start()
 
 	LocalPlayer.team = Get::PlayerTeam(LocalPlayer.pawn);
 
-	if (Menu::Aimbot::showFOV)
+	if (Menu::Aimbot::showFOV && !Menu::Aimbot::AimbotAlwaysOn)
         Aimbot::DrawAimbotFOV();
 
 

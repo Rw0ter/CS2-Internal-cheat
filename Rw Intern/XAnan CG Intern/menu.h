@@ -36,7 +36,7 @@ namespace Menu
 {
 
 	inline bool ShowMenu = { true };
-
+	inline bool SafeMode = { true };
 	inline bool bESP = { true };
 	inline bool bAimBot = { true };
 	inline bool TeamCheck = { true };
@@ -48,6 +48,9 @@ namespace Menu
 
 	namespace ESP 
 	{
+		
+		inline int bChoose = { 0 };
+		
 		inline bool Team = { false };
 		inline bool Box = { true };
 		inline int BoxType = { 0 };
@@ -55,7 +58,7 @@ namespace Menu
 		inline bool Name = { true };
 		inline bool Weapon = { false };
 		inline bool Line = { false };
-		inline int LineType = { 0 };
+		inline int LineType = { 1 };
 		inline bool AimCricle = { false };
 		inline int CricleType = { 0 };
 		inline bool Bone = { true };
@@ -64,17 +67,36 @@ namespace Menu
 		inline bool FOV = { false };
 		inline int FOVnumber = { 90 };
 
-	}
+		inline bool bLocalPlayerChams = { false };
+		inline int LocalPlayerChams = { 0 };
 
-	namespace AntiAim
-	{
-		inline bool bEnable = { false };
+		inline bool bTeammateVisibleChams = { false };
+		inline bool bTeammateInVisibleChams = { false };
+		inline int TeammateVisibleChams = { 0 };
+		inline int TeammateInVisibleChams = { 0 };
+
+		inline bool bEnemiesVisibleChams = { false };
+		inline bool bEnemiesInVisibleChams = { false };
+		inline int EnemiesVisibleChams = { 0 };
+		inline int EnemiesInVisibleChams = { 0 };
+
 	}
 
 	namespace Misc
 	{
 		inline bool Rander = { true };
+		inline bool bStandaloneQuickStop = { false };
+
+		inline bool Thirdperson = { false };
+		inline int ThirdpersonKey = { 18 };
+		inline float  flThirdpersonDistance = { 0.f };
+
 		inline bool Bhop = { false };
+		inline bool AutoStrafe = { false };
+		inline float flAutoStrafeSmoothing = { 0.f };
+		inline bool bAutoStrafeMovementKeys = { false };
+		inline bool bAutoStrafeViewAngles = { false };
+
 	}
 
 	namespace Color
@@ -90,6 +112,24 @@ namespace Menu
 		inline ImColor HealthColor = ImColor(0, 0, 0, 255);
 		inline ImColor WeaponColor = ImColor(252, 150, 237, 255);
 
+
+		inline ImColor LocalPlayerVisibleColor = ImColor(0, 255, 255, 255);
+
+		inline ImColor TeammateVisibleColor = ImColor(0, 255, 255, 255);
+		inline ImColor TeammateInVisibleColor = ImColor(0, 255, 255, 255);
+
+		inline ImColor EnemiesVisibleColor = ImColor(0, 255, 255, 255);
+		inline ImColor EnemiesInVisibleColor = ImColor(0, 255, 255, 255);
+
+	}
+
+	namespace Antiaim
+	{
+		inline bool bEnable = { false };
+		inline bool Spinbot = { false };
+		inline float YawOffset = { 0.0f };
+		inline float Spinspeed = { 0.0f };
+		inline float PitchOffset = { 0.0f };
 	}
 
 	namespace Aimbot
@@ -104,7 +144,7 @@ namespace Menu
 		inline int AimSize = { 100 };
 		inline int AimKey = { 18 };
 		inline int32_t AimPos = { 6 };
-		inline float Smooth = { 1.0f };
+		inline float Smooth = { 90.0f };
 
 		inline bool bSilent = false;
 		inline bool bAutoRecoil = true;
@@ -120,7 +160,7 @@ namespace Menu
 		inline bool TriggerBot = { false };
 		inline int HotKey = { 18 };
 		inline int TriggerShotDelay = { 0 };
-		inline int TriggerTargetDelay = { 0 };
+		inline float TriggerTargetDelay = { 0.0f };
 		inline ImColor rectColor = ImColor(0, 255, 0, 255);
 	}
 

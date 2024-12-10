@@ -1,5 +1,6 @@
 #include "Entity.h"
 
+#include "fnv1a.h"
 std::string string_To_UTF8(const std::string& str);
 
 std::string string_To_UTF8(const std::string& str)
@@ -48,6 +49,15 @@ int Get::PlayerTeam(intptr_t addr)
 
 	return team;
 
+}
+
+bool Get::IsPlayer(intptr_t addr) {
+	CSchemaClassInfoData* pInfo = GetSchemaBinding(addr);
+	if (!pInfo) {
+		return false;
+	}
+
+	return HASH_RT(pInfo->szName) == HASH("C_CSPlayerPawn");
 }
 
 bool Get::PawnAlive(intptr_t addr)

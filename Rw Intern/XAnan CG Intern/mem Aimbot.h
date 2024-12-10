@@ -24,6 +24,8 @@ namespace Aimbot
 	void Tiggerbot();
 	void DrawTiggerbotFOV();
 	void AutoFire();
+
+	void OnTriggerBot();
 };
 
 namespace Target
